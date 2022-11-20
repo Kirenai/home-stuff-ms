@@ -6,7 +6,12 @@
 
   <groupId>me.revilla</groupId>
   <artifactId>home-stuff-ms</artifactId>
+  <packaging>pom</packaging>
   <version>1.0</version>
+
+  <modules>
+    <module>user</module>
+  </modules>
 
   <name>home-stuff-ms</name>
 
