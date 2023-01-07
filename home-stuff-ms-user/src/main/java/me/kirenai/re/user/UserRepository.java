@@ -1,4 +1,4 @@
-package me.revilla.user;
+package me.kirenai.re.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
