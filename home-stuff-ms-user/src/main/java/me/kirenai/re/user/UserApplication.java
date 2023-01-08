@@ -1,4 +1,4 @@
-package me.kirenai.re;
+package me.kirenai.re.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

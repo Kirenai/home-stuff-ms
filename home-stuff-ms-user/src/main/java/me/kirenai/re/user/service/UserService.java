@@ -1,43 +1,37 @@
-package me.kirenai.re.user;
+package me.kirenai.re.user.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import me.kirenai.re.user.entity.User;
+import me.kirenai.re.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
-/**
- * NourishmentService
- *
- * @author Kirenai
- */
 @Slf4j
 @Service
-@Qualifier("user.service")
-public record UserServiceImp(UserRepository userRepository) implements UserService {
+@RequiredArgsConstructor
+public class UserService {
 
-    @Override
+    private final UserRepository userRepository;
+
     public List<User> findAll() {
         return Collections.emptyList();
     }
 
-    @Override
     public User findOne(Long id) {
         return User.builder().userId(id).build();
     }
 
-    @Override
     public User create(User data) {
         return User.builder().build();
     }
 
-    @Override
     public User update(Long id, User data) {
         return User.builder().build();
     }
 
-    @Override
     public void delete(Long id) {
     }
 
