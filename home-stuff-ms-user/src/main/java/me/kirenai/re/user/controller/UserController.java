@@ -60,5 +60,4 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.<UserResponse>builder().message("Deleted").build());
     }
 
-
 }
