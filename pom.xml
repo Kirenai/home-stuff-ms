@@ -11,6 +11,7 @@
 
     <modules>
         <module>home-stuff-ms-user</module>
+        <module>nourishment</module>
     </modules>
 
     <name>Home Stuff Services</name>
