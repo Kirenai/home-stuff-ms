@@ -12,6 +12,7 @@
     <modules>
         <module>home-stuff-ms-user</module>
         <module>nourishment</module>
+        <module>category</module>
     </modules>
 
     <name>Home Stuff Services</name>
