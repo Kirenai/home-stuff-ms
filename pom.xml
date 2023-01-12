@@ -13,6 +13,7 @@
         <module>user</module>
         <module>nourishment</module>
         <module>category</module>
+        <module>consumption</module>
     </modules>
 
     <name>Home Stuff Services</name>
