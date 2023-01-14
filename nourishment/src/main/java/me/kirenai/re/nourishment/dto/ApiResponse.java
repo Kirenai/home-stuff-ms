@@ -11,12 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NourishmentResponse {
+public class ApiResponse<T> {
 
-    private Long nourishmentId;
-    private String name;
-    private String imageUrl;
-    private String description;
-    private Boolean isAvailable;
+    private T response;
+    private String message;
 
 }

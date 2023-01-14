@@ -1,7 +1,9 @@
 package me.kirenai.re.nourishment.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.nourishment.dto.ApiResponse;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
 import me.kirenai.re.nourishment.service.NourishmentService;
@@ -32,38 +34,39 @@ public class NourishmentController {
     ) {
         log.info("Invoking NourishmentController.getNourishments method");
         List<NourishmentResponse> response = this.nourishmentService.findAll(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("{nourishmentId}")
     public ResponseEntity<NourishmentResponse> getNourishment(@PathVariable Long nourishmentId) {
         log.info("Invoking NourishmentController.getNourishment method");
         NourishmentResponse response = this.nourishmentService.findOne(nourishmentId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("stock/{is_available}")
-    public ResponseEntity<List<NourishmentResponse>> getNourishmentStockStatus(@PathVariable("is_available") boolean isAvailable) {
+    public ResponseEntity<List<NourishmentResponse>> getNourishmentStockStatus(@PathVariable("is_available") Boolean isAvailable) {
         log.info("Invoking NourishmentController.getNourishmentStockStatus method");
         List<NourishmentResponse> response = this.nourishmentService.findAllByIsAvailable(isAvailable);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<NourishmentResponse> createNourishment(@RequestParam("userId") Long userId,
-                                                                 @RequestParam("categoryId") Long categoryId,
-                                                                 @RequestBody NourishmentRequest nourishmentRequest) {
+    public ResponseEntity<ApiResponse<NourishmentResponse>> createNourishment(@RequestParam("userId") Long userId,
+                                                                              @RequestParam("categoryId") Long categoryId,
+                                                                              @RequestBody @Valid NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentController.createNourishment method");
         NourishmentResponse response = this.nourishmentService.create(userId, categoryId, nourishmentRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<NourishmentResponse>builder().response(response).message("Successfully created").build());
     }
 
     @PutMapping("{nourishmentId}")
-    public ResponseEntity<NourishmentResponse> updateNourishment(@PathVariable Long nourishmentId,
-                                                                 @RequestBody NourishmentRequest nourishmentRequest) {
+    public ResponseEntity<ApiResponse<NourishmentResponse>> updateNourishment(@PathVariable Long nourishmentId,
+                                                                              @RequestBody @Valid NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentController.updateNourishment method");
         NourishmentResponse response = this.nourishmentService.update(nourishmentId, nourishmentRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(ApiResponse.<NourishmentResponse>builder().response(response).message("Successfully updated").build());
     }
 
     @DeleteMapping("{nourishmentId}")
@@ -72,4 +75,5 @@ public class NourishmentController {
         this.nourishmentService.delete(nourishmentId);
         return ResponseEntity.noContent().build();
     }
+
 }

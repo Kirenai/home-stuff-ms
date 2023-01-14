@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NourishmentResponse {
+public class UserResponse {
 
-    private Long nourishmentId;
-    private String name;
-    private String imageUrl;
-    private String description;
-    private Boolean isAvailable;
+    private Long userId;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private Integer age;
 
 }

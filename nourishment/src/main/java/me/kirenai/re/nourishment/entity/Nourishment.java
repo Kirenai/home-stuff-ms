@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Nourishment
+ *
  * @author Kirenai
  */
 @Data
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "nourishments", uniqueConstraints = {
-    @UniqueConstraint(name = "unq_name", columnNames = {"name"})
+        @UniqueConstraint(name = "unq_name", columnNames = {"name"})
 })
 public class Nourishment {
 

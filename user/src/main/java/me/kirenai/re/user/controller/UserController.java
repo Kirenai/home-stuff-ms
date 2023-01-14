@@ -23,20 +23,20 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsers(
+    public ResponseEntity<List<UserResponse>> getUsers(
             @PageableDefault(size = 5)
             @SortDefault.SortDefaults(value = {
                     @SortDefault(sort = "userId", direction = Sort.Direction.ASC)
             }) Pageable pageable
     ) {
         List<UserResponse> response = this.userService.findAll(pageable);
-        return ResponseEntity.ok(ApiResponse.<List<UserResponse>>builder().response(response).build());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("{userId}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
         UserResponse response = this.userService.findOne(userId);
-        return ResponseEntity.ok(ApiResponse.<UserResponse>builder().response(response).build());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

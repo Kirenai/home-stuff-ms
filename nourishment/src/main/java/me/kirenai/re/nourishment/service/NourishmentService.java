@@ -2,23 +2,31 @@ package me.kirenai.re.nourishment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.nourishment.dto.CategoryResponse;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
+import me.kirenai.re.nourishment.dto.UserResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
+import me.kirenai.re.nourishment.util.NourishmentClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NourishmentService {
 
+    private static final String USER_URL_GET_ONE = "http://localhost:8080/api/users/{userId}";
+    private static final String CATEGORY_URL_GET_ONE = "http://localhost:8082/api/categories/{category}";
+
     private final NourishmentRepository nourishmentRepository;
     private final NourishmentMapper mapper;
+    private final NourishmentClient client;
 
     public List<NourishmentResponse> findAll(Pageable pageable) {
         log.info("Invoking NourishmentService.findAll method");
@@ -36,7 +44,7 @@ public class NourishmentService {
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }
 
-    public List<NourishmentResponse> findAllByIsAvailable(boolean isAvailable) {
+    public List<NourishmentResponse> findAllByIsAvailable(Boolean isAvailable) {
         log.info("Invoking NourishmentService.findAllNourishmentByStatus method");
         return this.nourishmentRepository.findByIsAvailable(isAvailable)
                 .stream()
@@ -48,7 +56,14 @@ public class NourishmentService {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapOutNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
-        // TODO: call service user and category
+        UserResponse userResponse = this.client.getResponse(userId, USER_URL_GET_ONE, UserResponse.class);
+        if (Objects.nonNull(userResponse)) {
+            nourishment.setUserId(userResponse.getUserId());
+        }
+        CategoryResponse categoryResponse = this.client.getResponse(categoryId, CATEGORY_URL_GET_ONE, CategoryResponse.class);
+        if (Objects.nonNull(categoryResponse)) {
+            nourishment.setCategoryId(categoryResponse.getCategoryId());
+        }
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }
