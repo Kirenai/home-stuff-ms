@@ -37,6 +37,13 @@ public class NourishmentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("{userId}/user")
+    public ResponseEntity<List<NourishmentResponse>> getNourishmentsByUserId(@PathVariable Long userId) {
+        log.info("Invoking NourishmentController.getNourishmentsByUserId method");
+        List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("{nourishmentId}")
     public ResponseEntity<NourishmentResponse> getNourishment(@PathVariable Long nourishmentId) {
         log.info("Invoking NourishmentController.getNourishment method");

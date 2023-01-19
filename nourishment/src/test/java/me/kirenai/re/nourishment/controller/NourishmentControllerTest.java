@@ -69,6 +69,36 @@ class NourishmentControllerTest {
     }
 
     @Test
+    @DisplayName("Should return list of nourishments by user id")
+    void getNourishmentsByUserIdTest() throws Exception {
+        List<NourishmentResponse> response = NourishmentMocks.getNourishmentResponseList();
+        when(this.nourishmentService.findAllByUserId(anyLong()))
+                .thenReturn(response);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get(this.URL.append("/1/user").toString());
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].nourishmentId").value(response.get(0).getNourishmentId()))
+                .andExpect(jsonPath("$[0].name").value(response.get(0).getName()))
+                .andExpect(jsonPath("$[0].description").value(response.get(0).getDescription()))
+                .andExpect(jsonPath("$[0].imageUrl").value(response.get(0).getImageUrl()))
+                .andExpect(jsonPath("$[0].isAvailable").value(response.get(0).getIsAvailable()))
+                .andExpect(jsonPath("$[1].nourishmentId").value(response.get(1).getNourishmentId()))
+                .andExpect(jsonPath("$[1].name").value(response.get(1).getName()))
+                .andExpect(jsonPath("$[1].description").value(response.get(1).getDescription()))
+                .andExpect(jsonPath("$[1].imageUrl").value(response.get(1).getImageUrl()))
+                .andExpect(jsonPath("$[1].isAvailable").value(response.get(1).getIsAvailable()))
+                .andExpect(jsonPath("$[2].nourishmentId").value(response.get(2).getNourishmentId()))
+                .andExpect(jsonPath("$[2].name").value(response.get(2).getName()))
+                .andExpect(jsonPath("$[2].description").value(response.get(2).getDescription()))
+                .andExpect(jsonPath("$[2].imageUrl").value(response.get(2).getImageUrl()))
+                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()));
+    }
+
+    @Test
     @DisplayName("Should return list of available nourishments")
     void getAvailableNourishmentList() throws Exception {
         List<NourishmentResponse> response = NourishmentMocks.getNourishmentResponseList();

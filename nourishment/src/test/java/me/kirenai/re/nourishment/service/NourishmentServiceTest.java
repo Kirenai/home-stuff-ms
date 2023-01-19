@@ -62,6 +62,26 @@ class NourishmentServiceTest {
     }
 
     @Test
+    @DisplayName("Should find a list of nourishment by user id")
+    void findAllByUserIdTest() {
+        List<NourishmentResponse> nourishmentResponse = NourishmentMocks
+                .getNourishmentResponseList();
+
+        when(this.nourishmentRepository.findByUserId(anyLong()))
+                .thenReturn(NourishmentMocks.getNourishmentPage().toList());
+        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
+                .thenReturn(nourishmentResponse.get(0), nourishmentResponse.get(1), nourishmentResponse.get(2));
+
+        List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(1L);
+
+        assertNotNull(response);
+        assertEquals(3, response.size());
+        assertEquals(nourishmentResponse, response);
+        verify(this.nourishmentRepository, times(1)).findByUserId(anyLong());
+        verify(this.mapper, times(3)).mapOutNourishmentToNourishmentResponse(any());
+    }
+
+    @Test
     @DisplayName("Should find a nourishment when it exists by nourishmentId")
     void findOneTest() {
         NourishmentResponse response = NourishmentMocks.getNourishmentResponse();

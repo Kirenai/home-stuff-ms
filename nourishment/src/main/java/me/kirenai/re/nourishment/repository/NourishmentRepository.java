@@ -11,4 +11,6 @@ public interface NourishmentRepository extends JpaRepository<Nourishment, Long> 
 
     List<Nourishment> findByIsAvailable(Boolean isAvailable);
 
+    List<Nourishment> findByUserId(Long userId);
+
 }

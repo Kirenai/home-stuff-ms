@@ -44,6 +44,14 @@ public class NourishmentService {
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }
 
+    public List<NourishmentResponse> findAllByUserId(Long userId) {
+        log.info("Invoking NourishmentService.findNourishmentsByUserId method");
+        return this.nourishmentRepository.findByUserId(userId)
+                .stream()
+                .map(this.mapper::mapOutNourishmentToNourishmentResponse)
+                .toList();
+    }
+
     public List<NourishmentResponse> findAllByIsAvailable(Boolean isAvailable) {
         log.info("Invoking NourishmentService.findAllNourishmentByStatus method");
         return this.nourishmentRepository.findByIsAvailable(isAvailable)
