@@ -18,5 +18,7 @@ public class NourishmentResponse {
     private String imageUrl;
     private String description;
     private Boolean isAvailable;
+    private Integer unit;
+    private Integer percentage;
 
 }

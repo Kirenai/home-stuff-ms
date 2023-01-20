@@ -65,13 +65,9 @@ public class NourishmentService {
         Nourishment nourishment = this.mapper.mapOutNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
         UserResponse userResponse = this.client.getResponse(userId, USER_URL_GET_ONE, UserResponse.class);
-        if (Objects.nonNull(userResponse)) {
-            nourishment.setUserId(userResponse.getUserId());
-        }
+        if (Objects.nonNull(userResponse)) nourishment.setUserId(userResponse.getUserId());
         CategoryResponse categoryResponse = this.client.getResponse(categoryId, CATEGORY_URL_GET_ONE, CategoryResponse.class);
-        if (Objects.nonNull(categoryResponse)) {
-            nourishment.setCategoryId(categoryResponse.getCategoryId());
-        }
+        if (Objects.nonNull(categoryResponse)) nourishment.setCategoryId(categoryResponse.getCategoryId());
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }
@@ -83,6 +79,9 @@ public class NourishmentService {
         nourishment.setName(nourishmentRequest.getName());
         nourishment.setDescription(nourishment.getDescription());
         nourishment.setImageUrl(nourishmentRequest.getImageUrl());
+        if (Objects.nonNull(nourishmentRequest.getUnit())) nourishment.setUnit(nourishmentRequest.getUnit());
+        if (Objects.nonNull(nourishmentRequest.getPercentage()))
+            nourishment.setPercentage(nourishmentRequest.getPercentage());
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }

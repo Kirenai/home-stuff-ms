@@ -56,16 +56,19 @@ class NourishmentControllerTest {
                 .andExpect(jsonPath("$[0].description").value(response.get(0).getDescription()))
                 .andExpect(jsonPath("$[0].imageUrl").value(response.get(0).getImageUrl()))
                 .andExpect(jsonPath("$[0].isAvailable").value(response.get(0).getIsAvailable()))
+                .andExpect(jsonPath("$[0].unit").value(response.get(0).getUnit()))
                 .andExpect(jsonPath("$[1].nourishmentId").value(response.get(1).getNourishmentId()))
                 .andExpect(jsonPath("$[1].name").value(response.get(1).getName()))
                 .andExpect(jsonPath("$[1].description").value(response.get(1).getDescription()))
                 .andExpect(jsonPath("$[1].imageUrl").value(response.get(1).getImageUrl()))
                 .andExpect(jsonPath("$[1].isAvailable").value(response.get(1).getIsAvailable()))
+                .andExpect(jsonPath("$[1].percentage").value(response.get(1).getPercentage()))
                 .andExpect(jsonPath("$[2].nourishmentId").value(response.get(2).getNourishmentId()))
                 .andExpect(jsonPath("$[2].name").value(response.get(2).getName()))
                 .andExpect(jsonPath("$[2].description").value(response.get(2).getDescription()))
                 .andExpect(jsonPath("$[2].imageUrl").value(response.get(2).getImageUrl()))
-                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()));
+                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()))
+                .andExpect(jsonPath("$[2].unit").value(response.get(2).getUnit()));
     }
 
     @Test
@@ -86,16 +89,19 @@ class NourishmentControllerTest {
                 .andExpect(jsonPath("$[0].description").value(response.get(0).getDescription()))
                 .andExpect(jsonPath("$[0].imageUrl").value(response.get(0).getImageUrl()))
                 .andExpect(jsonPath("$[0].isAvailable").value(response.get(0).getIsAvailable()))
+                .andExpect(jsonPath("$[0].unit").value(response.get(0).getUnit()))
                 .andExpect(jsonPath("$[1].nourishmentId").value(response.get(1).getNourishmentId()))
                 .andExpect(jsonPath("$[1].name").value(response.get(1).getName()))
                 .andExpect(jsonPath("$[1].description").value(response.get(1).getDescription()))
                 .andExpect(jsonPath("$[1].imageUrl").value(response.get(1).getImageUrl()))
                 .andExpect(jsonPath("$[1].isAvailable").value(response.get(1).getIsAvailable()))
+                .andExpect(jsonPath("$[1].percentage").value(response.get(1).getPercentage()))
                 .andExpect(jsonPath("$[2].nourishmentId").value(response.get(2).getNourishmentId()))
                 .andExpect(jsonPath("$[2].name").value(response.get(2).getName()))
                 .andExpect(jsonPath("$[2].description").value(response.get(2).getDescription()))
                 .andExpect(jsonPath("$[2].imageUrl").value(response.get(2).getImageUrl()))
-                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()));
+                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()))
+                .andExpect(jsonPath("$[2].unit").value(response.get(2).getUnit()));
     }
 
     @Test
@@ -116,29 +122,30 @@ class NourishmentControllerTest {
                 .andExpect(jsonPath("$[0].description").value(response.get(0).getDescription()))
                 .andExpect(jsonPath("$[0].imageUrl").value(response.get(0).getImageUrl()))
                 .andExpect(jsonPath("$[0].isAvailable").value(response.get(0).getIsAvailable()))
+                .andExpect(jsonPath("$[0].unit").value(response.get(0).getUnit()))
                 .andExpect(jsonPath("$[1].nourishmentId").value(response.get(1).getNourishmentId()))
                 .andExpect(jsonPath("$[1].name").value(response.get(1).getName()))
                 .andExpect(jsonPath("$[1].description").value(response.get(1).getDescription()))
                 .andExpect(jsonPath("$[1].imageUrl").value(response.get(1).getImageUrl()))
                 .andExpect(jsonPath("$[1].isAvailable").value(response.get(1).getIsAvailable()))
+                .andExpect(jsonPath("$[1].percentage").value(response.get(1).getPercentage()))
                 .andExpect(jsonPath("$[2].nourishmentId").value(response.get(2).getNourishmentId()))
                 .andExpect(jsonPath("$[2].name").value(response.get(2).getName()))
                 .andExpect(jsonPath("$[2].description").value(response.get(2).getDescription()))
                 .andExpect(jsonPath("$[2].imageUrl").value(response.get(2).getImageUrl()))
-                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()));
+                .andExpect(jsonPath("$[2].isAvailable").value(response.get(2).getIsAvailable()))
+                .andExpect(jsonPath("$[2].unit").value(response.get(2).getUnit()));
     }
 
     @Test
     @DisplayName("Should create nourishment")
     void createNourishment() throws Exception {
-        Long userId = 1L;
-        Long categoryId = 1L;
         NourishmentResponse response = NourishmentMocks.getNourishmentResponse();
         when(this.nourishmentService.create(anyLong(), anyLong(), any(NourishmentRequest.class)))
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post(this.URL.append("?userId=").append(userId).append("&categoryId=").append(categoryId).toString())
+                .post(this.URL.append("?userId=1&categoryId=1").toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.objectMapper.writeValueAsString(NourishmentMocks.getNourishmentRequest()));
 
@@ -148,20 +155,20 @@ class NourishmentControllerTest {
                 .andExpect(jsonPath("$.response.name").value(response.getName()))
                 .andExpect(jsonPath("$.response.description").value(response.getDescription()))
                 .andExpect(jsonPath("$.response.imageUrl").value(response.getImageUrl()))
-                .andExpect(jsonPath("$.response.isAvailable").value(response.getIsAvailable()));
+                .andExpect(jsonPath("$.response.isAvailable").value(response.getIsAvailable()))
+                .andExpect(jsonPath("$.response.unit").value(response.getUnit()));
     }
 
     @Test
     @DisplayName("Should update nourishment")
     void updateNourishment() throws Exception {
-        Long nourishmentId = 1L;
         NourishmentResponse response = NourishmentMocks
                 .getNourishmentResponse();
         when(this.nourishmentService.update(anyLong(), any(NourishmentRequest.class)))
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put(this.URL.append("/").append(nourishmentId).toString())
+                .put(this.URL.append("/1").toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.objectMapper.writeValueAsString(NourishmentMocks.getNourishmentRequest()));
 
@@ -175,11 +182,10 @@ class NourishmentControllerTest {
     @Test
     @DisplayName("Should delete nourishment")
     void deleteNourishment() throws Exception {
-        Long nourishmentId = 1L;
         doNothing().when(this.nourishmentService).delete(anyLong());
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete(this.URL.append("/").append(nourishmentId).toString());
+                .delete(this.URL.append("/1").toString());
 
         this.mockMvc.perform(request)
                 .andExpect(status().isNoContent());

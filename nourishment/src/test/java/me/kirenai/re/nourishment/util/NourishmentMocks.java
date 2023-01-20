@@ -14,21 +14,25 @@ public class NourishmentMocks {
                                                                  String name,
                                                                  String path,
                                                                  String description,
-                                                                 Boolean isAvailable) {
+                                                                 Boolean isAvailable,
+                                                                 Integer unit,
+                                                                 Integer percentage) {
         return NourishmentResponse.builder()
                 .nourishmentId(id)
                 .name(name)
                 .imageUrl(path)
                 .description(description)
                 .isAvailable(isAvailable)
+                .unit(unit)
+                .percentage(percentage)
                 .build();
     }
 
     public static List<NourishmentResponse> getNourishmentResponseList() {
         return List.of(
-                getNourishmentResponseMock(1L, "name1", "path1", "description1", true),
-                getNourishmentResponseMock(2L, "name2", "path2", "description2", true),
-                getNourishmentResponseMock(3L, "name3", "path3", "description3", true)
+                getNourishmentResponseMock(1L, "name1", "path1", "description1", true, 10, null),
+                getNourishmentResponseMock(2L, "name2", "path2", "description2", true, null, 65),
+                getNourishmentResponseMock(3L, "name3", "path3", "description3", true, 20, null)
         );
     }
 
@@ -41,6 +45,7 @@ public class NourishmentMocks {
                 .name("name")
                 .imageUrl("imageUrl")
                 .description("description")
+                .percentage(100)
                 .build();
     }
 

@@ -38,6 +38,12 @@ public class Nourishment {
     @Column(name = "is_available", nullable = false)
     private Boolean isAvailable;
 
+    @Column(name = "unit")
+    private Integer unit;
+
+    @Column(name = "percentage", precision = 3)
+    private Integer percentage;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
