@@ -31,9 +31,9 @@ public class Consumption {
     private Integer percentage;
 
     @Column(name = "nourishment_id", nullable = false)
-    private Long nourishment;
+    private Long nourishmentId;
 
     @Column(name = "user_id", nullable = false)
-    private Long user;
+    private Long userId;
 
 }
