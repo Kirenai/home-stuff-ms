@@ -135,7 +135,7 @@ class NourishmentServiceTest {
     @Test
     @DisplayName("Should create a nourishment")
     void createTest() {
-        when(this.mapper.mapOutNourishmentRequestToNourishment(any()))
+        when(this.mapper.mapInNourishmentRequestToNourishment(any()))
                 .thenReturn(NourishmentMocks.getNourishment());
         when(this.client.getResponse(anyLong(), anyString(), eq(UserResponse.class)))
                 .thenReturn(UserMocks.getUserResponse());
@@ -149,7 +149,7 @@ class NourishmentServiceTest {
                 this.nourishmentService.create(1L, 1L, NourishmentMocks.getNourishmentRequest());
 
         assertNotNull(response);
-        verify(this.mapper, times(1)).mapOutNourishmentRequestToNourishment(any());
+        verify(this.mapper, times(1)).mapInNourishmentRequestToNourishment(any());
         verify(this.client, times(2)).getResponse(anyLong(), anyString(), any());
         verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
     }

@@ -62,7 +62,7 @@ public class NourishmentService {
 
     public NourishmentResponse create(Long userId, Long categoryId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.create method");
-        Nourishment nourishment = this.mapper.mapOutNourishmentRequestToNourishment(nourishmentRequest);
+        Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
         UserResponse userResponse = this.client.getResponse(userId, USER_URL_GET_ONE, UserResponse.class);
         if (Objects.nonNull(userResponse)) nourishment.setUserId(userResponse.getUserId());

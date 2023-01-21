@@ -13,12 +13,12 @@ public class NourishmentMapper {
 
     private final ModelMapper modelMapper;
 
-    public NourishmentResponse mapOutNourishmentToNourishmentResponse(Nourishment nourishment) {
-        return this.modelMapper.map(nourishment, NourishmentResponse.class);
+    public Nourishment mapInNourishmentRequestToNourishment(NourishmentRequest nourishmentRequest) {
+        return this.modelMapper.map(nourishmentRequest, Nourishment.class);
     }
 
-    public Nourishment mapOutNourishmentRequestToNourishment(NourishmentRequest nourishmentRequest) {
-        return this.modelMapper.map(nourishmentRequest, Nourishment.class);
+    public NourishmentResponse mapOutNourishmentToNourishmentResponse(Nourishment nourishment) {
+        return this.modelMapper.map(nourishment, NourishmentResponse.class);
     }
 
 }
