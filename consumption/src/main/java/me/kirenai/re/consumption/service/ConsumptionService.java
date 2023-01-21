@@ -46,7 +46,7 @@ public class ConsumptionService {
 
     public ConsumptionResponse create(Long nourishmentId, Long userId, ConsumptionRequest consumptionDto) {
         log.info("Invoking ConsumptionService.create method");
-        Consumption consumption = this.mapper.mapOutConsumptionRequestToConsumption(consumptionDto);
+        Consumption consumption = this.mapper.mapInConsumptionRequestToConsumption(consumptionDto);
         UserResponse userResponse = this.client.getResponse(userId, USER_URL_GET_ONE, UserResponse.class);
         if (Objects.nonNull(userResponse)) consumption.setUserId(userResponse.getUserId());
         NourishmentResponse nourishmentResponse =

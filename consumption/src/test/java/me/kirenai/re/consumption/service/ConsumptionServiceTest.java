@@ -77,7 +77,7 @@ class ConsumptionServiceTest {
     void shouldCreateConsumptionWhenUserHasAuthorizationWhenCreating() {
         ConsumptionResponse consumptionResponse = ConsumptionMocks.getConsumptionResponse();
 
-        when(this.mapper.mapOutConsumptionRequestToConsumption(any()))
+        when(this.mapper.mapInConsumptionRequestToConsumption(any()))
                 .thenReturn(ConsumptionMocks.getConsumption());
         when(this.client.getResponse(anyLong(), anyString(), eq(UserResponse.class)))
                 .thenReturn(UserMocks.getUserResponse());

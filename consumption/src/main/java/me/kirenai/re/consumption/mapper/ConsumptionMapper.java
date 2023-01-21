@@ -15,14 +15,15 @@ public class ConsumptionMapper {
 
     private final ModelMapper modelMapper;
 
+    public Consumption mapInConsumptionRequestToConsumption(ConsumptionRequest consumptionRequest) {
+        log.info("Invoking ConsumptionMapper.mapInConsumptionRequestToConsumption");
+        return this.modelMapper.map(consumptionRequest, Consumption.class);
+    }
+
     public ConsumptionResponse mapOutConsumptionToConsumptionResponse(Consumption consumption) {
         log.info("Invoking ConsumptionMapper.mapOutConsumptionToConsumptionResponse method");
         return this.modelMapper.map(consumption, ConsumptionResponse.class);
     }
 
-    public Consumption mapOutConsumptionRequestToConsumption(ConsumptionRequest consumptionRequest) {
-        log.info("Invoking ConsumptionMapper.mapOutConsumptionRequestToConsumption method");
-        return this.modelMapper.map(consumptionRequest, Consumption.class);
-    }
 
 }
