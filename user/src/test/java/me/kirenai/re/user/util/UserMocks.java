@@ -2,6 +2,9 @@ package me.kirenai.re.user.util;
 
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
+import me.kirenai.re.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,4 +46,26 @@ public class UserMocks {
                 .build();
     }
 
+    public static Page<User> getUserPage() {
+        return new PageImpl<>(Arrays.asList(
+                getUserMock(1L, "username1", "password1", "firstName1", "lastName1", 10),
+                getUserMock(2L, "username2", "password2", "firstName2", "lastName2", 15),
+                getUserMock(3L, "username3", "password3", "firstName3", "lastName3", 20)
+        ));
+    }
+
+    private static User getUserMock(Long userId, String username, String password, String firstName, String lastName, Integer age) {
+        return User.builder()
+                .userId(userId)
+                .username(username)
+                .password(password)
+                .firstName(firstName)
+                .lastName(lastName)
+                .age(age)
+                .build();
+    }
+
+    public static User getUser() {
+        return getUserPage().getContent().get(0);
+    }
 }
