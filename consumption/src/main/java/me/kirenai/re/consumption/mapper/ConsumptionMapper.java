@@ -16,7 +16,7 @@ public class ConsumptionMapper {
     private final ModelMapper modelMapper;
 
     public Consumption mapInConsumptionRequestToConsumption(ConsumptionRequest consumptionRequest) {
-        log.info("Invoking ConsumptionMapper.mapInConsumptionRequestToConsumption");
+        log.info("Invoking ConsumptionMapper.mapInConsumptionRequestToConsumption method");
         return this.modelMapper.map(consumptionRequest, Consumption.class);
     }
 
