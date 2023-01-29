@@ -38,7 +38,7 @@ public class CategoryService {
 
     public CategoryResponse create(CategoryRequest categoryRequest) {
         log.info("Invoking CategoryService.create method");
-        Category category = this.mapper.mapOutCategoryRequestToCategory(categoryRequest);
+        Category category = this.mapper.mapInCategoryRequestToCategory(categoryRequest);
         this.categoryRepository.save(category);
         return this.mapper.mapOutCategoryToCategoryResponse(category);
     }
