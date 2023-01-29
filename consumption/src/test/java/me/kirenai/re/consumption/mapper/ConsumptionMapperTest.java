@@ -6,24 +6,14 @@ import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ExtendWith(MockitoExtension.class)
 class ConsumptionMapperTest {
 
-    @InjectMocks
-    private ConsumptionMapper mapper;
-    @Spy
-    private ModelMapper modelMapper;
+    private final ConsumptionMapper mapper = Mappers.getMapper(ConsumptionMapper.class);
 
     @Test
     @DisplayName("mapInTest")
@@ -35,8 +25,6 @@ class ConsumptionMapperTest {
         assertNotNull(request.getUnit());
 
         assertEquals(input.getUnit(), request.getUnit());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
     @Test
@@ -49,8 +37,6 @@ class ConsumptionMapperTest {
         assertNotNull(response.getUnit());
 
         assertEquals(input.getUnit(), response.getUnit());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
 }
