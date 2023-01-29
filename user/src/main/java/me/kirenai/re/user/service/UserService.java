@@ -34,7 +34,7 @@ public class UserService {
     }
 
     public UserResponse create(UserRequest userRequest) {
-        User user = this.userMapper.mapOutUserRequestToUser(userRequest);
+        User user = this.userMapper.mapInUserRequestToUser(userRequest);
         this.userRepository.save(user);
         return this.userMapper.mapOutUserToUserResponse(user);
 

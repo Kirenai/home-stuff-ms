@@ -74,14 +74,14 @@ class UserServiceTest {
     void shouldCreateUser() {
         UserResponse userResponse = UserMocks.getUserResponse();
 
-        when(this.userMapper.mapOutUserRequestToUser(any())).thenReturn(UserMocks.getUser());
+        when(this.userMapper.mapInUserRequestToUser(any())).thenReturn(UserMocks.getUser());
         when(this.userMapper.mapOutUserToUserResponse(any())).thenReturn(userResponse);
 
         UserResponse response = this.userService.create(new UserRequest());
 
         assertEquals(userResponse, response);
 
-        verify(this.userMapper, times(1)).mapOutUserRequestToUser(any());
+        verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }
 
