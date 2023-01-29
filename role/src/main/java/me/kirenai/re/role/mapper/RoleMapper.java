@@ -1,28 +1,28 @@
 package me.kirenai.re.role.mapper;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.role.dto.RoleRequest;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.entity.Role;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.BeforeMapping;
+import org.mapstruct.Mapper;
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
-public class RoleMapper {
+@Mapper(componentModel = "spring")
+public abstract class RoleMapper {
 
-    private final ModelMapper modelMapper;
+    public abstract Role mapInRoleRequestToRole(RoleRequest roleRequest);
 
-    public Role mapInRoleRequestToRole(RoleRequest roleRequest) {
+    public abstract RoleResponse mapOutRoleToRoleResponse(Role role);
+
+    @BeforeMapping
+    public void mapInLog(RoleRequest roleRequest) {
         log.info("Invoking RoleMapper.mapInRoleRequestToRole method");
-        return this.modelMapper.map(roleRequest, Role.class);
     }
 
-    public RoleResponse mapOutRoleToRoleResponse(Role role) {
+    @BeforeMapping
+    public void mapInLog(Role role) {
         log.info("Invoking RoleMapper.mapOutRoleToRoleResponse method");
-        return this.modelMapper.map(role, RoleResponse.class);
     }
 
 }

@@ -6,24 +6,14 @@ import me.kirenai.re.role.entity.Role;
 import me.kirenai.re.role.util.RoleMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ExtendWith(MockitoExtension.class)
 class RoleMapperTest {
 
-    @InjectMocks
-    private RoleMapper roleMapper;
-    @Spy
-    private ModelMapper modelMapper;
+    private final RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @Test
     @DisplayName("mapInTest")
@@ -35,8 +25,6 @@ class RoleMapperTest {
         assertNotNull(request.getName());
 
         assertEquals(input.getName(), request.getName());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
     @Test
@@ -45,8 +33,6 @@ class RoleMapperTest {
         Role request = this.roleMapper.mapInRoleRequestToRole(new RoleRequest());
 
         assertNotNull(request);
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
     @Test
@@ -61,8 +47,6 @@ class RoleMapperTest {
 
         assertEquals(input.getRoleId(), response.getRoleId());
         assertEquals(input.getName(), response.getName());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
     @Test
@@ -71,8 +55,6 @@ class RoleMapperTest {
         RoleResponse response = this.roleMapper.mapOutRoleToRoleResponse(new Role());
 
         assertNotNull(response);
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
 }
