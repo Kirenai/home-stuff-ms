@@ -6,25 +6,14 @@ import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 class NourishmentMapperTest {
 
-    @InjectMocks
-    private NourishmentMapper mapper;
-    @Spy
-    private ModelMapper modelMapper;
+    private final NourishmentMapper mapper = Mappers.getMapper(NourishmentMapper.class);
 
     @Test
     @DisplayName("mapInTest")
@@ -42,8 +31,6 @@ class NourishmentMapperTest {
         assertEquals(input.getImageUrl(), request.getImageUrl());
         assertEquals(input.getDescription(), request.getDescription());
         assertEquals(input.getPercentage(), request.getPercentage());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
 
     @Test
@@ -64,9 +51,6 @@ class NourishmentMapperTest {
         assertEquals(input.getImageUrl(), response.getImageUrl());
         assertEquals(input.getDescription(), response.getDescription());
         assertEquals(input.getIsAvailable(), response.getIsAvailable());
-
-        verify(this.modelMapper, timeout(1)).map(any(), any());
     }
-
 
 }

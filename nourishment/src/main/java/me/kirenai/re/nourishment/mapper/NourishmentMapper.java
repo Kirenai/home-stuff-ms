@@ -1,24 +1,28 @@
 package me.kirenai.re.nourishment.mapper;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.BeforeMapping;
+import org.mapstruct.Mapper;
 
-@Component
-@RequiredArgsConstructor
-public class NourishmentMapper {
+@Slf4j
+@Mapper(componentModel = "spring")
+public abstract class NourishmentMapper {
 
-    private final ModelMapper modelMapper;
+    public abstract Nourishment mapInNourishmentRequestToNourishment(NourishmentRequest nourishmentRequest);
 
-    public Nourishment mapInNourishmentRequestToNourishment(NourishmentRequest nourishmentRequest) {
-        return this.modelMapper.map(nourishmentRequest, Nourishment.class);
+    public abstract NourishmentResponse mapOutNourishmentToNourishmentResponse(Nourishment nourishment);
+
+    @BeforeMapping
+    public void mapInLog(NourishmentRequest nourishmentRequest) {
+       log.info("Invoking NourishmentMapper.mapInNourishmentRequestToNourishment method");
     }
 
-    public NourishmentResponse mapOutNourishmentToNourishmentResponse(Nourishment nourishment) {
-        return this.modelMapper.map(nourishment, NourishmentResponse.class);
+    @BeforeMapping
+    public void mapOutLog(Nourishment nourishment) {
+        log.info("Invoking NourishmentMapper.mapOutNourishmentToNourishmentResponse method");
     }
 
 }
