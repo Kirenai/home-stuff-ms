@@ -22,7 +22,7 @@ public abstract class UserMapper {
 
     @BeforeMapping
     public void mapOutLog(User user) {
-        log.info("Invoking UserMapper.mapInUserRequestToUser method");
+        log.info("Invoking UserMapper.mapOutUserToUserResponse method");
     }
 
 }
