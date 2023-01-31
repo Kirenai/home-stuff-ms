@@ -11,13 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserResponse {
+public class RoleResponse {
 
-    private Long userId;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private Integer age;
     private Long roleId;
+    private String name;
 
 }

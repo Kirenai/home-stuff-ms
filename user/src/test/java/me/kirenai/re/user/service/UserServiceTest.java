@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private RestTemplate restTemplate;
 
     @Test
     @DisplayName("Should find a list of users")
@@ -82,6 +85,7 @@ class UserServiceTest {
         assertEquals(userResponse, response);
 
         verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
+        verify(this.restTemplate, times(1)).getForObject(anyString(), any());
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }
 
