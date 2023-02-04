@@ -29,6 +29,7 @@ public class UserService {
     private final RoleUserPredicate roleUserPredicate;
 
     public List<UserResponse> findAll(Pageable pageable) {
+        log.info("Invoking UserService.findAll method");
         return this.userRepository.findAll(pageable)
                 .getContent()
                 .stream()
@@ -37,11 +38,13 @@ public class UserService {
     }
 
     public UserResponse findOne(Long id) {
+        log.info("Invoking UserService.findOne method");
         User user = this.userRepository.findById(id).orElseThrow();
         return this.userMapper.mapOutUserToUserResponse(user);
     }
 
     public UserResponse create(UserRequest userRequest) {
+        log.info("Invoking UserService.create method");
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
         RoleResponse[] roleResponse = this.restTemplate.getForObject(GET_ROLES_URL, RoleResponse[].class);
         if (Objects.nonNull(roleResponse)) {
@@ -57,6 +60,7 @@ public class UserService {
     }
 
     public UserResponse update(Long id, UserRequest userRequest) {
+        log.info("Invoking UserService.update method");
         User userFound = this.userRepository.findById(id).orElseThrow();
         userFound.setPassword(userRequest.getPassword());
         userFound.setFirstName(userRequest.getFirstName());
@@ -67,6 +71,7 @@ public class UserService {
     }
 
     public void delete(Long id) {
+        log.info("Invoking UserService.delete method");
         this.userRepository.deleteById(id);
     }
 
