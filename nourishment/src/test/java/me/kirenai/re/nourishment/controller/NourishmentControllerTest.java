@@ -79,7 +79,7 @@ class NourishmentControllerTest {
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get(this.URL.append("/1/user").toString());
+                .get(this.URL.append("?userId=1").toString());
 
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())

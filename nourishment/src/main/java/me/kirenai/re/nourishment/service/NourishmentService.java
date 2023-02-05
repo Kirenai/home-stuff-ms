@@ -21,7 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class NourishmentService {
 
-    private static final String USER_URL_GET_ONE = "http://localhost:8080/api/users/{userId}";
+    private static final String USER_URL_GET_ONE = "http://localhost:8080/api/v0/users/{userId}";
     private static final String CATEGORY_URL_GET_ONE = "http://localhost:8082/api/categories/{category}";
 
     private final NourishmentRepository nourishmentRepository;

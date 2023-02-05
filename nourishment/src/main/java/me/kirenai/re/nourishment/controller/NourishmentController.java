@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -30,17 +31,14 @@ public class NourishmentController {
             @PageableDefault(size = 5)
             @SortDefault.SortDefaults(value = {
                     @SortDefault(sort = "nourishmentId", direction = Sort.Direction.ASC)
-            }) Pageable pageable
+            }) Pageable pageable, @RequestParam(value = "userId", required = false) Long userId
     ) {
         log.info("Invoking NourishmentController.getNourishments method");
+        if (Objects.nonNull(userId)) {
+            List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(userId);
+            return ResponseEntity.ok(response);
+        }
         List<NourishmentResponse> response = this.nourishmentService.findAll(pageable);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("{userId}/user")
-    public ResponseEntity<List<NourishmentResponse>> getNourishmentsByUserId(@PathVariable Long userId) {
-        log.info("Invoking NourishmentController.getNourishmentsByUserId method");
-        List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(userId);
         return ResponseEntity.ok(response);
     }
 
