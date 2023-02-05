@@ -16,12 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/nourishments")
+@RequestMapping("/api/v0/nourishments")
 public class NourishmentController {
 
     private final NourishmentService nourishmentService;
@@ -31,34 +30,37 @@ public class NourishmentController {
             @PageableDefault(size = 5)
             @SortDefault.SortDefaults(value = {
                     @SortDefault(sort = "nourishmentId", direction = Sort.Direction.ASC)
-            }) Pageable pageable, @RequestParam(value = "userId", required = false) Long userId
+            }) Pageable pageable
     ) {
         log.info("Invoking NourishmentController.getNourishments method");
-        if (Objects.nonNull(userId)) {
-            List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(userId);
-            return ResponseEntity.ok(response);
-        }
         List<NourishmentResponse> response = this.nourishmentService.findAll(pageable);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("{nourishmentId}")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<NourishmentResponse>> getNourishmentsByUserId(@PathVariable Long userId) {
+        log.info("Invoking NourishmentController.getNourishmentsByUserId method");
+        List<NourishmentResponse> response = this.nourishmentService.findAllByUserId(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{nourishmentId}")
     public ResponseEntity<NourishmentResponse> getNourishment(@PathVariable Long nourishmentId) {
         log.info("Invoking NourishmentController.getNourishment method");
         NourishmentResponse response = this.nourishmentService.findOne(nourishmentId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("stock/{is_available}")
-    public ResponseEntity<List<NourishmentResponse>> getNourishmentStockStatus(@PathVariable("is_available") Boolean isAvailable) {
-        log.info("Invoking NourishmentController.getNourishmentStockStatus method");
+    @GetMapping("/isAvailable/{isAvailable}")
+    public ResponseEntity<List<NourishmentResponse>> getNourishmentsByIsAvailable(@PathVariable Boolean isAvailable) {
+        log.info("Invoking NourishmentController.getNourishmentsByIsAvailable method");
         List<NourishmentResponse> response = this.nourishmentService.findAllByIsAvailable(isAvailable);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<NourishmentResponse>> createNourishment(@RequestParam("userId") Long userId,
-                                                                              @RequestParam("categoryId") Long categoryId,
+    @PostMapping("/user/{userId}/category/{categoryId}")
+    public ResponseEntity<ApiResponse<NourishmentResponse>> createNourishment(@PathVariable Long userId,
+                                                                              @PathVariable Long categoryId,
                                                                               @RequestBody @Valid NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentController.createNourishment method");
         NourishmentResponse response = this.nourishmentService.create(userId, categoryId, nourishmentRequest);
@@ -66,7 +68,7 @@ public class NourishmentController {
                 .body(ApiResponse.<NourishmentResponse>builder().response(response).message("Successfully created").build());
     }
 
-    @PutMapping("{nourishmentId}")
+    @PutMapping("/{nourishmentId}")
     public ResponseEntity<ApiResponse<NourishmentResponse>> updateNourishment(@PathVariable Long nourishmentId,
                                                                               @RequestBody @Valid NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentController.updateNourishment method");
@@ -74,7 +76,7 @@ public class NourishmentController {
         return ResponseEntity.ok(ApiResponse.<NourishmentResponse>builder().response(response).message("Successfully updated").build());
     }
 
-    @DeleteMapping("{nourishmentId}")
+    @DeleteMapping("/{nourishmentId}")
     public ResponseEntity<NourishmentResponse> deleteNourishment(@PathVariable Long nourishmentId) {
         log.info("Invoking NourishmentController.deleteNourishment method");
         this.nourishmentService.delete(nourishmentId);

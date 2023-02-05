@@ -36,7 +36,7 @@ class NourishmentControllerTest {
     @MockBean
     private NourishmentService nourishmentService;
 
-    private final StringBuilder URL = new StringBuilder("/api/nourishments");
+    private final StringBuilder URL = new StringBuilder("/api/v0/nourishments");
 
     @Test
     @DisplayName("Should return nourishment list")
@@ -79,7 +79,7 @@ class NourishmentControllerTest {
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get(this.URL.append("?userId=1").toString());
+                .get(this.URL.append("/user/1").toString());
 
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -112,7 +112,7 @@ class NourishmentControllerTest {
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get(this.URL.append("/stock/").append(true).toString());
+                .get(this.URL.append("/isAvailable/true").toString());
 
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -145,7 +145,7 @@ class NourishmentControllerTest {
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post(this.URL.append("?userId=1&categoryId=1").toString())
+                .post(this.URL.append("/user/1/category/1").toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.objectMapper.writeValueAsString(NourishmentMocks.getNourishmentRequest()));
 
