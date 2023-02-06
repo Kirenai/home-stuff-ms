@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/consumptions")
+@RequestMapping("/api/v0/consumptions")
 public class ConsumptionController {
 
     private final ConsumptionService consumptionService;
@@ -35,16 +35,16 @@ public class ConsumptionController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("{consumptionId}")
+    @GetMapping("/{consumptionId}")
     public ResponseEntity<ConsumptionResponse> getConsumption(@PathVariable Long consumptionId) {
         log.info("Invoking ConsumptionController.getConsumption method");
         ConsumptionResponse response = this.consumptionService.findOne(consumptionId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping
-    public ResponseEntity<ConsumptionResponse> createConsumption(@RequestParam("userId") Long userId,
-                                                                 @RequestParam("nourishmentId") Long nourishmentId,
+    @PostMapping("/user/{userId}/nourishment/{nourishmentId}")
+    public ResponseEntity<ConsumptionResponse> createConsumption(@PathVariable Long userId,
+                                                                 @PathVariable Long nourishmentId,
                                                                  @RequestBody ConsumptionRequest consumptionRequest) {
         log.info("Invoking ConsumptionController.createConsumption method");
         ConsumptionResponse response = this.consumptionService.create(nourishmentId, userId, consumptionRequest);

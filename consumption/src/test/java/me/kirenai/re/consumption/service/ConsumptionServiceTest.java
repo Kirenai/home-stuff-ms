@@ -83,6 +83,8 @@ class ConsumptionServiceTest {
                 .thenReturn(UserMocks.getUserResponse());
         when(this.client.getResponse(anyLong(), anyString(), eq(NourishmentResponse.class)))
                 .thenReturn(NourishmentMocks.getNourishmentResponse());
+        when(this.mapper.mapInNourishmentResponseToNourishmentRequest(any()))
+                .thenReturn(NourishmentMocks.getNourishmentRequest());
         when(this.mapper.mapOutConsumptionToConsumptionResponse(any())).thenReturn(consumptionResponse);
 
         ConsumptionResponse response = consumptionService.create(1L, 1L, ConsumptionMocks.getConsumptionRequest());

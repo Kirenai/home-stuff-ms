@@ -1,0 +1,34 @@
+package me.kirenai.re.consumption.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class NourishmentRequest {
+
+    @NotEmpty
+    @Size(min = 2, max = 35)
+    private String name;
+    @NotEmpty
+    private String imageUrl;
+    private String description;
+    @Min(value = 0)
+    private Integer unit;
+    @Max(value = 100)
+    @Min(value = 0)
+    private Integer percentage;
+
+}

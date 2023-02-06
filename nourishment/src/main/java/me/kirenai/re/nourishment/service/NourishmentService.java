@@ -79,9 +79,14 @@ public class NourishmentService {
         nourishment.setName(nourishmentRequest.getName());
         nourishment.setDescription(nourishment.getDescription());
         nourishment.setImageUrl(nourishmentRequest.getImageUrl());
-        if (Objects.nonNull(nourishmentRequest.getUnit())) nourishment.setUnit(nourishmentRequest.getUnit());
-        if (Objects.nonNull(nourishmentRequest.getPercentage()))
+        if (Objects.nonNull(nourishmentRequest.getUnit())) {
+            nourishment.setUnit(nourishmentRequest.getUnit());
+            if (nourishmentRequest.getUnit() == 0) nourishment.setIsAvailable(Boolean.FALSE);
+        }
+        if (Objects.nonNull(nourishmentRequest.getPercentage())) {
             nourishment.setPercentage(nourishmentRequest.getPercentage());
+            if (nourishmentRequest.getPercentage() == 0) nourishment.setIsAvailable(Boolean.FALSE);
+        }
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);
     }

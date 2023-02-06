@@ -2,8 +2,11 @@ package me.kirenai.re.consumption.mapper;
 
 import me.kirenai.re.consumption.dto.ConsumptionRequest;
 import me.kirenai.re.consumption.dto.ConsumptionResponse;
+import me.kirenai.re.consumption.dto.NourishmentRequest;
+import me.kirenai.re.consumption.dto.NourishmentResponse;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
+import me.kirenai.re.consumption.util.NourishmentMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -37,6 +40,24 @@ class ConsumptionMapperTest {
         assertNotNull(response.getUnit());
 
         assertEquals(input.getUnit(), response.getUnit());
+    }
+
+    @Test
+    @DisplayName("mapInNourishmentRequestTest")
+    public void shouldMapInNourishmentResponseToNourishmentRequest() {
+        NourishmentResponse input = NourishmentMocks.getNourishmentResponse();
+        NourishmentRequest request = this.mapper.mapInNourishmentResponseToNourishmentRequest(input);
+
+        assertNotNull(request);
+        assertNotNull(request.getName());
+        assertNotNull(request.getImageUrl());
+        assertNotNull(request.getDescription());
+        assertNotNull(request.getUnit());
+
+        assertEquals(input.getName(), request.getName());
+        assertEquals(input.getImageUrl(), request.getImageUrl());
+        assertEquals(input.getDescription(), request.getDescription());
+        assertEquals(input.getUnit(), request.getUnit());
     }
 
 }

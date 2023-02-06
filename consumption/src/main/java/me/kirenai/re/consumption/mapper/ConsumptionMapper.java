@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.consumption.dto.ConsumptionRequest;
 import me.kirenai.re.consumption.dto.ConsumptionResponse;
+import me.kirenai.re.consumption.dto.NourishmentRequest;
+import me.kirenai.re.consumption.dto.NourishmentResponse;
 import me.kirenai.re.consumption.entity.Consumption;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
@@ -17,9 +19,16 @@ public abstract class ConsumptionMapper {
 
     public abstract ConsumptionResponse mapOutConsumptionToConsumptionResponse(Consumption consumption);
 
+    public abstract NourishmentRequest mapInNourishmentResponseToNourishmentRequest(NourishmentResponse nourishmentResponse);
+
     @BeforeMapping
     public void mapInLog(ConsumptionRequest consumptionRequest){
         log.info("Invoking ConsumptionMapper.mapInConsumptionRequestToConsumption method");
+    }
+
+    @BeforeMapping
+    public void mapInLog(NourishmentResponse nourishmentResponse){
+        log.info("Invoking ConsumptionMapper.mapInNourishmentResponseToNourishmentRequest method");
     }
 
     @BeforeMapping

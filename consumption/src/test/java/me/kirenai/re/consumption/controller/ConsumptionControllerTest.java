@@ -36,7 +36,7 @@ class ConsumptionControllerTest {
     @MockBean
     private ConsumptionService consumptionService;
 
-    private final StringBuilder URL = new StringBuilder("/api/consumptions");
+    private final StringBuilder URL = new StringBuilder("/api/v0/consumptions");
 
     @Test
     @DisplayName("Should return all consumptions")
@@ -81,7 +81,7 @@ class ConsumptionControllerTest {
                 .thenReturn(response);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post(this.URL.append("?userId=1&nourishmentId=1").toString())
+                .post(this.URL.append("/user/1/nourishment/1").toString())
                 .content(this.objectMapper.writeValueAsString(ConsumptionMocks.getConsumptionRequest()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);

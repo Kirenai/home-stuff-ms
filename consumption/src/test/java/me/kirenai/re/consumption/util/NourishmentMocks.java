@@ -1,5 +1,6 @@
 package me.kirenai.re.consumption.util;
 
+import me.kirenai.re.consumption.dto.NourishmentRequest;
 import me.kirenai.re.consumption.dto.NourishmentResponse;
 
 import java.util.List;
@@ -36,4 +37,12 @@ public class NourishmentMocks {
                 .build();
     }
 
+    public static NourishmentRequest getNourishmentRequest() {
+        return NourishmentRequest.builder()
+                .name("name1")
+                .imageUrl("path1")
+                .description("description1")
+                .unit(10)
+                .build();
+    }
 }
