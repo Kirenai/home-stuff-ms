@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class UserService {
 
-    public static final String GET_ROLES_URL = "http://localhost:8084/api/v0/roles";
+    public static final String GET_ROLES_URL = "http://ROLE/api/v0/roles";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RestTemplate restTemplate;
