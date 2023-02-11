@@ -19,8 +19,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ConsumptionService {
 
-    private static final String USER_URL_GET_ONE = "http://localhost:8080/api/v0/users/{userId}";
-    private static final String NOURISHMENT_URL_GET_ONE = "http://localhost:8081/api/v0/nourishments/{nourishmentsId}";
+    private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
+    private static final String NOURISHMENT_URL_GET_ONE = "http://NOURISHMENT/api/v0/nourishments/{nourishmentsId}";
 
     private final ConsumptionRepository consumptionRepository;
     private final ConsumptionMapper mapper;
