@@ -1,4 +1,4 @@
-package me.kirenai.re.user.dto;
+package me.kirenai.re.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserRequest {
+public class RegisterRequest {
 
     @NotEmpty
     @Size(min = 2, max = 50)

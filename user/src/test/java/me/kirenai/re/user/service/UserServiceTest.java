@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -34,6 +35,8 @@ class UserServiceTest {
     private UserMapper userMapper;
     @Mock
     private RestTemplate restTemplate;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     @DisplayName("Should find a list of users")

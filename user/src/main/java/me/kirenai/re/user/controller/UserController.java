@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v0/users")
+@RequestMapping("/api/v0/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -36,10 +36,18 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("{userId}")
+
+    @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
         log.info("Invoking UserController.getUser method");
         UserResponse response = this.userService.findOne(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/details/{username}")
+    public ResponseEntity<me.kirenai.re.security.dto.UserResponse> getUserByUsername(@PathVariable String username) {
+        log.info("Invoking UserController.getUserByUsername method");
+        me.kirenai.re.security.dto.UserResponse response = this.userService.findByUsername(username);
         return ResponseEntity.ok(response);
     }
 

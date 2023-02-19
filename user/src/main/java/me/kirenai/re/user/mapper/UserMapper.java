@@ -15,6 +15,8 @@ public abstract class UserMapper {
 
     public abstract UserResponse mapOutUserToUserResponse(User user);
 
+    public abstract me.kirenai.re.security.dto.UserResponse mapOutUserToUserResponseSec(User user);
+
     @BeforeMapping
     public void mapInLog(UserRequest userRequest) {
         log.info("Invoking UserMapper.mapInUserRequestToUser method");
@@ -22,7 +24,7 @@ public abstract class UserMapper {
 
     @BeforeMapping
     public void mapOutLog(User user) {
-        log.info("Invoking UserMapper.mapOutUserToUserResponse method");
+        log.info("Invoking UserMapper.mapOutUserToUserResponse||mapOutUserToUserResponseSec method");
     }
 
 }

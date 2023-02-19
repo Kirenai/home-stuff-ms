@@ -10,6 +10,7 @@ import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
 import me.kirenai.re.user.util.RoleUserPredicate;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,6 +28,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final RestTemplate restTemplate;
     private final RoleUserPredicate roleUserPredicate;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponse> findAll(Pageable pageable) {
         log.info("Invoking UserService.findAll method");
@@ -43,6 +45,12 @@ public class UserService {
         return this.userMapper.mapOutUserToUserResponse(user);
     }
 
+    public me.kirenai.re.security.dto.UserResponse findByUsername(String username) {
+        log.info("Invoking UserService.findByUsername method");
+        User user = this.userRepository.findByUsername(username).orElseThrow();
+        return this.userMapper.mapOutUserToUserResponseSec(user);
+    }
+
     public UserResponse create(UserRequest userRequest) {
         log.info("Invoking UserService.create method");
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
@@ -55,6 +63,7 @@ public class UserService {
                     .orElseThrow();
             user.setRoleId(roleId);
         }
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         this.userRepository.save(user);
         return this.userMapper.mapOutUserToUserResponse(user);
     }
@@ -62,7 +71,7 @@ public class UserService {
     public UserResponse update(Long id, UserRequest userRequest) {
         log.info("Invoking UserService.update method");
         User userFound = this.userRepository.findById(id).orElseThrow();
-        userFound.setPassword(userRequest.getPassword());
+        userFound.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
         userFound.setFirstName(userRequest.getFirstName());
         userFound.setLastName(userRequest.getLastName());
         userFound.setAge(userRequest.getAge());

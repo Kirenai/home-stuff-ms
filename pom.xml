@@ -16,6 +16,8 @@
         <module>consumption</module>
         <module>role</module>
         <module>eureka-server</module>
+        <module>security</module>
+        <module>auth</module>
     </modules>
 
     <name>Home Stuff Services</name>
