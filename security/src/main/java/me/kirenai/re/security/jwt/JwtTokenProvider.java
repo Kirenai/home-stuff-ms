@@ -5,7 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Setter
 @Slf4j
 @Configuration
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     public static final String AUTHORITIES = "authorities";
@@ -37,6 +37,8 @@ public class JwtTokenProvider {
     private String tokenPrefix;
     @Value(value = "${application.jwt.tokenExpirationAfterDays}")
     private Integer tokenExpirationAfterDays;
+
+    private final HttpServletRequest request;
 
     public String getJwtAuthenticationHeader() {
         return HttpHeaders.AUTHORIZATION;
@@ -53,6 +55,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public HttpHeaders getCurrentTokenAsHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(this.getJwtAuthenticationHeader(), this.request.getHeader(this.getJwtAuthenticationHeader()));
+        return headers;
+    }
 
     public String generateJwtToken() {
         return Jwts.builder()
@@ -83,7 +90,7 @@ public class JwtTokenProvider {
 
     public List<SimpleGrantedAuthority> getJwtGrantedAuthorities(String token) {
         Claims claims = this.getJwtBody(token);
-        List<LinkedHashMap<String, String>> claimsAuthorities =  claims.get(AUTHORITIES, List.class);
+        List<LinkedHashMap<String, String>> claimsAuthorities = claims.get(AUTHORITIES, List.class);
         return claimsAuthorities
                 .stream()
                 .map(map -> map.get(AUTHORITY))

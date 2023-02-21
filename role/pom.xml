@@ -43,6 +43,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>me.kirenai.re</groupId>
+            <artifactId>security</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,10 +1,12 @@
 package me.kirenai.re.user.util;
 
+import me.kirenai.re.user.dto.RoleResponse;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,4 +70,16 @@ public class UserMocks {
     public static User getUser() {
         return getUserPage().getContent().get(0);
     }
+
+    public static ResponseEntity<RoleResponse[]> getRoleResponseEntity() {
+        return ResponseEntity.ok(List.of(getRoleResponse()).toArray(RoleResponse[]::new));
+    }
+
+    private static RoleResponse getRoleResponse() {
+        return RoleResponse.builder()
+                .roleId(1L)
+                .name("ROLE_USER")
+                .build();
+    }
+
 }

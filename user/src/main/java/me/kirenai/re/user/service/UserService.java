@@ -2,6 +2,7 @@ package me.kirenai.re.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.user.dto.RoleResponse;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
@@ -10,6 +11,9 @@ import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
 import me.kirenai.re.user.util.RoleUserPredicate;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,6 +33,7 @@ public class UserService {
     private final RestTemplate restTemplate;
     private final RoleUserPredicate roleUserPredicate;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public List<UserResponse> findAll(Pageable pageable) {
         log.info("Invoking UserService.findAll method");
@@ -54,7 +59,13 @@ public class UserService {
     public UserResponse create(UserRequest userRequest) {
         log.info("Invoking UserService.create method");
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
-        RoleResponse[] roleResponse = this.restTemplate.getForObject(GET_ROLES_URL, RoleResponse[].class);
+        ResponseEntity<RoleResponse[]> entityResponse = this.restTemplate.exchange(
+                GET_ROLES_URL,
+                HttpMethod.GET,
+                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
+                RoleResponse[].class
+        );
+        RoleResponse[] roleResponse = entityResponse.getBody();
         if (Objects.nonNull(roleResponse)) {
             Long roleId = Stream.of(roleResponse)
                     .filter(roleUserPredicate)

@@ -1,15 +1,19 @@
 package me.kirenai.re.user.service;
 
+import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.user.dto.RoleResponse;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
+import me.kirenai.re.user.util.RoleUserPredicate;
 import me.kirenai.re.user.util.UserMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,8 +39,12 @@ class UserServiceTest {
     private UserMapper userMapper;
     @Mock
     private RestTemplate restTemplate;
+    @Spy
+    private RoleUserPredicate roleUserPredicate;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("Should find a list of users")
@@ -81,6 +89,8 @@ class UserServiceTest {
         UserResponse userResponse = UserMocks.getUserResponse();
 
         when(this.userMapper.mapInUserRequestToUser(any())).thenReturn(UserMocks.getUser());
+        when(this.restTemplate.exchange(anyString(), any(), any(), eq(RoleResponse[].class)))
+                .thenReturn(UserMocks.getRoleResponseEntity());
         when(this.userMapper.mapOutUserToUserResponse(any())).thenReturn(userResponse);
 
         UserResponse response = this.userService.create(new UserRequest());
@@ -88,7 +98,8 @@ class UserServiceTest {
         assertEquals(userResponse, response);
 
         verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
-        verify(this.restTemplate, times(1)).getForObject(anyString(), any());
+        verify(this.restTemplate, times(1)).exchange(anyString(), any(), any(), eq(RoleResponse[].class));
+        verify(this.jwtTokenProvider, times(1)).getCurrentTokenAsHeader();
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }
 
