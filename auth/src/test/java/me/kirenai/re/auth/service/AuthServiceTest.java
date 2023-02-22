@@ -43,7 +43,7 @@ class AuthServiceTest {
         when(this.restTemplate.postForEntity(anyString(), any(), any(), anyMap()))
                 .thenReturn(ResponseEntity.ok(AuthMocks.getApiResponse()));
         this.authService.register(new RegisterRequest());
-        verify(this.jwtTokenProvider, timeout(1)).generateJwtToken();
+        verify(this.jwtTokenProvider, timeout(1)).generateInternalJwtToken();
         verify(this.jwtTokenProvider, timeout(1)).getTokenPrefix();
         verify(this.restTemplate, timeout(1)).postForEntity(anyString(), any(), any(), anyMap());
     }

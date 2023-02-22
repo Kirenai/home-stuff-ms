@@ -40,7 +40,7 @@ public class AuthService {
 
     public ApiResponse<UserResponse> register(RegisterRequest registerRequest) {
         log.info("Invoking AuthService.register method");
-        String token = this.jwtTokenProvider.generateJwtToken();
+        String token = this.jwtTokenProvider.generateInternalJwtToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token);
         ResponseEntity<ApiResponse> response = this.restTemplate.postForEntity(POST_USER_URL, new HttpEntity<>(registerRequest), ApiResponse.class, headers);

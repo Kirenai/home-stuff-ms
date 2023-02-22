@@ -27,7 +27,7 @@ public class SecurityUtil {
     private final JwtTokenProvider jwtTokenProvider;
 
     public UserDetails getUserDetails(String username) {
-        String token = this.jwtTokenProvider.generateJwtToken();
+        String token = this.jwtTokenProvider.generateInternalJwtToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token);
         ResponseEntity<UserResponse> userEntity = this.restTemplate.exchange(GET_ONE_USER_DETAILS_URL, HttpMethod.GET, new HttpEntity<>(headers), UserResponse.class, username);

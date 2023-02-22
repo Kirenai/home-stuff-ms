@@ -37,6 +37,10 @@ public class JwtTokenProvider {
     private String tokenPrefix;
     @Value(value = "${application.jwt.tokenExpirationAfterDays}")
     private Integer tokenExpirationAfterDays;
+    @Value(value = "${application.jwt.internal.username}")
+    private String username;
+    @Value(value = "${application.jwt.internal.roleName}")
+    private String roleName;
 
     private final HttpServletRequest request;
 
@@ -61,10 +65,10 @@ public class JwtTokenProvider {
         return headers;
     }
 
-    public String generateJwtToken() {
+    public String generateInternalJwtToken() {
         return Jwts.builder()
-                .setSubject("yelan")
-                .claim(AUTHORITIES, List.of(new SimpleGrantedAuthority("ROLE_USER")))
+                .setSubject(this.getUsername())
+                .claim(AUTHORITIES, List.of(new SimpleGrantedAuthority(this.getRoleName())))
                 .setIssuedAt(new Date())
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now()
                         .plusDays(this.getTokenExpirationAfterDays())))

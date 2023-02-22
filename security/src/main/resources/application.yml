@@ -15,3 +15,6 @@ application:
     secretKey: secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret
     tokenPrefix: "Bearer "
     tokenExpirationAfterDays: 1
+    internal:
+      username: yelan
+      roleName: USER_ROLE
