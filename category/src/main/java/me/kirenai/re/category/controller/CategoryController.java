@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/categories")
+@RequestMapping("/api/v0/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -35,7 +35,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("{categoryId}")
+    @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable Long categoryId) {
         log.info("Invoking CategoryController.getCategory method");
         CategoryResponse response = this.categoryService.findOne(categoryId);
@@ -49,7 +49,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("{categoryId}")
+    @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long categoryId,
                                                            @RequestBody CategoryRequest categoryRequest) {
         log.info("Invoking CategoryController.updateCategory method");
@@ -57,7 +57,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long categoryId) {
         log.info("Invoking CategoryController.deleteCategory method");
         this.categoryService.delete(categoryId);

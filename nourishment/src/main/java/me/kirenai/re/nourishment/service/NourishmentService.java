@@ -27,7 +27,7 @@ import java.util.Objects;
 public class NourishmentService {
 
     private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
-    private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/categories/{categoryId}";
+    private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/v0/categories/{categoryId}";
 
     private final NourishmentRepository nourishmentRepository;
     private final NourishmentMapper mapper;
