@@ -10,7 +10,12 @@ import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
 import me.kirenai.re.nourishment.util.NourishmentClient;
+import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +27,12 @@ import java.util.Objects;
 public class NourishmentService {
 
     private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
-    private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/categories/{category}";
+    private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/categories/{categoryId}";
 
     private final NourishmentRepository nourishmentRepository;
     private final NourishmentMapper mapper;
     private final NourishmentClient client;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public List<NourishmentResponse> findAll(Pageable pageable) {
         log.info("Invoking NourishmentService.findAll method");
@@ -64,9 +70,24 @@ public class NourishmentService {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
-        UserResponse userResponse = this.client.getResponse(userId, USER_URL_GET_ONE, UserResponse.class);
+        HttpHeaders currentTokenAsHeader = this.jwtTokenProvider.getCurrentTokenAsHeader();
+        ResponseEntity<UserResponse> userEntity = this.client.exchange(
+                USER_URL_GET_ONE,
+                HttpMethod.GET,
+                new HttpEntity<>(currentTokenAsHeader),
+                UserResponse.class,
+                userId
+        );
+        UserResponse userResponse = userEntity.getBody();
         if (Objects.nonNull(userResponse)) nourishment.setUserId(userResponse.getUserId());
-        CategoryResponse categoryResponse = this.client.getResponse(categoryId, CATEGORY_URL_GET_ONE, CategoryResponse.class);
+        ResponseEntity<CategoryResponse> categoryEntity = this.client.exchange(
+                CATEGORY_URL_GET_ONE,
+                HttpMethod.GET,
+                new HttpEntity<>(currentTokenAsHeader),
+                CategoryResponse.class,
+                categoryId
+        );
+        CategoryResponse categoryResponse = categoryEntity.getBody();
         if (Objects.nonNull(categoryResponse)) nourishment.setCategoryId(categoryResponse.getCategoryId());
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);

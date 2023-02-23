@@ -10,6 +10,7 @@ import me.kirenai.re.nourishment.util.CategoryMocks;
 import me.kirenai.re.nourishment.util.NourishmentClient;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
 import me.kirenai.re.nourishment.util.UserMocks;
+import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,8 @@ class NourishmentServiceTest {
     private NourishmentMapper mapper;
     @Mock
     private NourishmentClient client;
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("Should find a list of nourishment")
@@ -137,20 +140,20 @@ class NourishmentServiceTest {
     void createTest() {
         when(this.mapper.mapInNourishmentRequestToNourishment(any()))
                 .thenReturn(NourishmentMocks.getNourishment());
-        when(this.client.getResponse(anyLong(), anyString(), eq(UserResponse.class)))
-                .thenReturn(UserMocks.getUserResponse());
-        when(this.client.getResponse(anyLong(), anyString(), eq(CategoryResponse.class)))
-                .thenReturn(CategoryMocks.getCategoryResponse());
+        when(this.client.exchange(anyString(), any(), any(), eq(UserResponse.class), any()))
+                .thenReturn(UserMocks.getUserResponseEntity());
+        when(this.client.exchange(anyString(), any(), any(), eq(CategoryResponse.class), any()))
+                .thenReturn(CategoryMocks.getCategoryResponseEntity());
         when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
                 .thenReturn(NourishmentMocks.getNourishmentResponse());
-
 
         NourishmentResponse response =
                 this.nourishmentService.create(1L, 1L, NourishmentMocks.getNourishmentRequest());
 
         assertNotNull(response);
+
         verify(this.mapper, times(1)).mapInNourishmentRequestToNourishment(any());
-        verify(this.client, times(2)).getResponse(anyLong(), anyString(), any());
+        verify(this.client, times(2)).exchange(anyString(), any(), any(), any(), any());
         verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
     }
 

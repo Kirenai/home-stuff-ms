@@ -1,6 +1,7 @@
 package me.kirenai.re.nourishment.util;
 
 import me.kirenai.re.nourishment.dto.UserResponse;
+import org.springframework.http.ResponseEntity;
 
 public class UserMocks {
 
@@ -16,6 +17,10 @@ public class UserMocks {
 
     public static UserResponse getUserResponse() {
         return userResponseMock(1L, "username1", "firstName1", "lastName1", 1);
+    }
+
+    public static ResponseEntity<UserResponse> getUserResponseEntity() {
+        return ResponseEntity.ok(getUserResponse());
     }
 
 }
