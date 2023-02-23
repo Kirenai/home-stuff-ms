@@ -7,10 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -23,9 +24,9 @@ class ConsumptionClientTest {
     private RestTemplate restTemplate;
 
     @Test
-    public void shouldGetResponseTest() {
-        this.client.getResponse(1L, "url", UserResponse.class);
-        verify(this.restTemplate, timeout(1)).getForObject(anyString(), any(), any(Object.class));
+    public void shouldExchangeTest() {
+        this.client.exchange("url", HttpMethod.GET, new HttpEntity<>(new Object()), UserResponse.class, 1L);
+        verify(this.restTemplate, timeout(1)).exchange(anyString(), any(), any(), eq(UserResponse.class), anyLong());
     }
 
     @Test

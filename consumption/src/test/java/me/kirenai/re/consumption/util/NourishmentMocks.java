@@ -2,6 +2,7 @@ package me.kirenai.re.consumption.util;
 
 import me.kirenai.re.consumption.dto.NourishmentRequest;
 import me.kirenai.re.consumption.dto.NourishmentResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -44,5 +45,9 @@ public class NourishmentMocks {
                 .description("description1")
                 .unit(10)
                 .build();
+    }
+
+    public static ResponseEntity<NourishmentResponse> getNourishmentResponseEntity() {
+        return ResponseEntity.ok(getNourishmentResponse());
     }
 }

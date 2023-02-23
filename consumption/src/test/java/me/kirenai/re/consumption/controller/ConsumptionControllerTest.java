@@ -5,13 +5,17 @@ import me.kirenai.re.consumption.dto.ConsumptionRequest;
 import me.kirenai.re.consumption.dto.ConsumptionResponse;
 import me.kirenai.re.consumption.service.ConsumptionService;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
+import me.kirenai.re.security.jwt.JwtTokenFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,10 +25,13 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ConsumptionController.class)
+@WebMvcTest(controllers = ConsumptionController.class,
+        excludeFilters = {@ComponentScan.Filter(classes = {JwtTokenFilter.class}, type = FilterType.ASSIGNABLE_TYPE)})
+@WithMockUser
 class ConsumptionControllerTest {
 
     @Autowired
@@ -82,6 +89,7 @@ class ConsumptionControllerTest {
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post(this.URL.append("/user/1/nourishment/1").toString())
+                .with(csrf())
                 .content(this.objectMapper.writeValueAsString(ConsumptionMocks.getConsumptionRequest()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);

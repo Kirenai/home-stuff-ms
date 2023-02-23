@@ -1,5 +1,6 @@
 package me.kirenai.re.consumption.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.consumption.dto.ConsumptionRequest;
@@ -45,7 +46,7 @@ public class ConsumptionController {
     @PostMapping("/user/{userId}/nourishment/{nourishmentId}")
     public ResponseEntity<ConsumptionResponse> createConsumption(@PathVariable Long userId,
                                                                  @PathVariable Long nourishmentId,
-                                                                 @RequestBody ConsumptionRequest consumptionRequest) {
+                                                                 @RequestBody @Valid ConsumptionRequest consumptionRequest) {
         log.info("Invoking ConsumptionController.createConsumption method");
         ConsumptionResponse response = this.consumptionService.create(nourishmentId, userId, consumptionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
