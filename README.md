@@ -5,3 +5,6 @@
 - consumption
 - category
 - role
+- security
+- eureka-server
+- auth
