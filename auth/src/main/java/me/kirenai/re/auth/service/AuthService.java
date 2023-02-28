@@ -9,6 +9,7 @@ import me.kirenai.re.auth.dto.UserResponse;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +44,12 @@ public class AuthService {
         String token = this.jwtTokenProvider.generateInternalJwtToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token);
-        ResponseEntity<ApiResponse> response = this.restTemplate.postForEntity(POST_USER_URL, new HttpEntity<>(registerRequest), ApiResponse.class, headers);
+        ResponseEntity<ApiResponse> response = this.restTemplate.exchange(
+                POST_USER_URL,
+                HttpMethod.POST,
+                new HttpEntity<>(registerRequest, headers),
+                ApiResponse.class
+        );
         return response.getBody();
     }
 

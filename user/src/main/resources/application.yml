@@ -31,4 +31,4 @@ application:
     tokenExpirationAfterDays: 1
     internal:
       username: yelan
-      roleName: USER_ROLE
+      roleName: ROLE_USER

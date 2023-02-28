@@ -1,5 +1,6 @@
 package me.kirenai.re.auth.service;
 
+import me.kirenai.re.auth.dto.ApiResponse;
 import me.kirenai.re.auth.dto.LoginRequest;
 import me.kirenai.re.auth.dto.RegisterRequest;
 import me.kirenai.re.auth.util.AuthMocks;
@@ -40,12 +41,12 @@ class AuthServiceTest {
     @Test
     @DisplayName("Should register")
     public void registerTest() {
-        when(this.restTemplate.postForEntity(anyString(), any(), any(), anyMap()))
+        when(this.restTemplate.exchange(anyString(), any(), any(), eq(ApiResponse.class)))
                 .thenReturn(ResponseEntity.ok(AuthMocks.getApiResponse()));
         this.authService.register(new RegisterRequest());
         verify(this.jwtTokenProvider, timeout(1)).generateInternalJwtToken();
         verify(this.jwtTokenProvider, timeout(1)).getTokenPrefix();
-        verify(this.restTemplate, timeout(1)).postForEntity(anyString(), any(), any(), anyMap());
+        verify(this.restTemplate, timeout(1)).exchange(anyString(), any(), any(), eq(ApiResponse.class));
     }
 
 }

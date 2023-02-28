@@ -37,10 +37,17 @@ public class RoleController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("{roleId}")
+    @GetMapping("/{roleId}")
     public ResponseEntity<RoleResponse> getRole(@PathVariable Long roleId) {
         log.info("Invoking RoleController.getRole method");
         RoleResponse response = this.roleService.findOne(roleId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<RoleResponse>> getRolesByUserId(@PathVariable Long userId) {
+        log.info("Invoking RoleController.getRolesByUserId method");
+        List<RoleResponse> response = this.roleService.findAllByUserId(userId);
         return ResponseEntity.ok(response);
     }
 
@@ -51,7 +58,14 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.<RoleResponse>builder().response(response).build());
     }
 
-    @PutMapping("{roleId}")
+    @PostMapping("/user/{userId}")
+    public ResponseEntity<?> createRoleUser(@PathVariable Long userId) {
+        log.info("Invoking RoleController.createRoleUser method");
+        this.roleService.createRoleUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateRole(@PathVariable Long roleId,
                                                                 @RequestBody @Valid RoleRequest roleDto) {
         log.info("Invoking RoleController.updateRole method");

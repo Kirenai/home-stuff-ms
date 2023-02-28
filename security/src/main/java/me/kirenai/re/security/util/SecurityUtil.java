@@ -14,15 +14,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
 public class SecurityUtil {
 
     public static final String GET_ONE_USER_DETAILS_URL = "http://USER/api/v0/users/details/{username}";
-    public static final String GET_ONE_ROLE_ROLE = "http://ROLE/api/v0/roles/{roleId}";
+    public static final String GET_ROLES_USER_URL = "http://ROLE/api/v0/roles/user/{userId}";
     private final RestTemplate restTemplate;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -30,17 +30,29 @@ public class SecurityUtil {
         String token = this.jwtTokenProvider.generateInternalJwtToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token);
-        ResponseEntity<UserResponse> userEntity = this.restTemplate.exchange(GET_ONE_USER_DETAILS_URL, HttpMethod.GET, new HttpEntity<>(headers), UserResponse.class, username);
+        ResponseEntity<UserResponse> userEntity = this.restTemplate.exchange(
+                GET_ONE_USER_DETAILS_URL,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                UserResponse.class,
+                username
+        );
         UserResponse userResponse = userEntity.getBody();
         if (Objects.isNull(userResponse)) throw new IllegalStateException("Not Found");
-        ResponseEntity<RoleResponse> roleEntity = this.restTemplate.exchange(GET_ONE_ROLE_ROLE, HttpMethod.GET, new HttpEntity<>(headers), RoleResponse.class, userResponse.getRoleId());
-        RoleResponse roleResponse = roleEntity.getBody();
+        ResponseEntity<RoleResponse[]> roleEntity = this.restTemplate.exchange(
+                GET_ROLES_USER_URL,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                RoleResponse[].class,
+                userResponse.getUserId()
+        );
+        RoleResponse[] roleResponse = roleEntity.getBody();
         if (Objects.isNull(roleResponse)) throw new IllegalStateException("Not Found");
         return new AuthUserDetails(
                 userResponse.getUserId(),
                 userResponse.getUsername(),
                 userResponse.getPassword(),
-                List.of(new SimpleGrantedAuthority(roleResponse.getName()))
+                Stream.of(roleResponse).map(role -> new SimpleGrantedAuthority(role.getName())).toList()
         );
     }
 

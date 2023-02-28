@@ -80,6 +80,27 @@ class RoleControllerTest {
     }
 
     @Test
+    @DisplayName("Should return a list of roles by userId")
+    void getRolesByUserIdTest() throws Exception {
+        List<RoleResponse> rolesResponse = RoleMocks.getRoleResponseList();
+        when(this.roleService.findAllByUserId(anyLong()))
+                .thenReturn(rolesResponse);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get(this.URL.append("/user/1").toString());
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].roleId").value(rolesResponse.get(0).getRoleId()))
+                .andExpect(jsonPath("$[0].name").value(rolesResponse.get(0).getName()))
+                .andExpect(jsonPath("$[1].roleId").value(rolesResponse.get(1).getRoleId()))
+                .andExpect(jsonPath("$[1].roleId").value(rolesResponse.get(1).getRoleId()))
+                .andExpect(jsonPath("$[2].name").value(rolesResponse.get(2).getName()))
+                .andExpect(jsonPath("$[2].name").value(rolesResponse.get(2).getName()));
+    }
+
+    @Test
     @DisplayName("Should create role")
     void createRoleTest() throws Exception {
         RoleResponse roleResponse = RoleMocks.getRoleResponse();
@@ -97,6 +118,17 @@ class RoleControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.response.roleId").value(roleResponse.getRoleId()))
                 .andExpect(jsonPath("$.response.name").value(roleResponse.getName()));
+    }
+
+    @Test
+    @DisplayName("Should create role user")
+    void createRoleUserTest() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .post(this.URL.append("/user/1").toString())
+                .with(csrf());
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isNoContent());
     }
 
     @Test

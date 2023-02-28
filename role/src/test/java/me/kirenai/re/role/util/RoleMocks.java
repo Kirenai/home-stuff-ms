@@ -3,6 +3,7 @@ package me.kirenai.re.role.util;
 import me.kirenai.re.role.dto.RoleRequest;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.entity.Role;
+import me.kirenai.re.role.entity.RoleUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -52,6 +53,17 @@ public class RoleMocks {
         return Role.builder()
                 .roleId(roleId)
                 .name(name)
+                .build();
+    }
+
+    public static List<RoleUser> getRoleUserList() {
+        return List.of(getRoleUserMock());
+    }
+
+    private static RoleUser getRoleUserMock() {
+        return RoleUser.builder()
+                .userId(1L)
+                .role(getRole())
                 .build();
     }
 

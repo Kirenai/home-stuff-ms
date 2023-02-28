@@ -33,7 +33,4 @@ public class User {
     @Column(name = "age", nullable = false)
     private Integer age;
 
-    @Column(name = "role_id", nullable = false)
-    private Long roleId;
-
 }

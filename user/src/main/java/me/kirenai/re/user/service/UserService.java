@@ -3,35 +3,31 @@ package me.kirenai.re.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
-import me.kirenai.re.user.dto.RoleResponse;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.entity.User;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
-import me.kirenai.re.user.util.RoleUserPredicate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    public static final String GET_ROLES_URL = "http://ROLE/api/v0/roles";
+    public static final String POST_ROLES_USER_URL = "http://ROLE/api/v0/roles/user/{userId}";
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RestTemplate restTemplate;
-    private final RoleUserPredicate roleUserPredicate;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -56,26 +52,19 @@ public class UserService {
         return this.userMapper.mapOutUserToUserResponseSec(user);
     }
 
+    @Transactional
     public UserResponse create(UserRequest userRequest) {
         log.info("Invoking UserService.create method");
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
-        ResponseEntity<RoleResponse[]> entityResponse = this.restTemplate.exchange(
-                GET_ROLES_URL,
-                HttpMethod.GET,
-                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                RoleResponse[].class
-        );
-        RoleResponse[] roleResponse = entityResponse.getBody();
-        if (Objects.nonNull(roleResponse)) {
-            Long roleId = Stream.of(roleResponse)
-                    .filter(roleUserPredicate)
-                    .map(RoleResponse::getRoleId)
-                    .findFirst()
-                    .orElseThrow();
-            user.setRoleId(roleId);
-        }
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         this.userRepository.save(user);
+        this.restTemplate.exchange(
+                POST_ROLES_USER_URL,
+                HttpMethod.POST,
+                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
+                Void.class,
+                user.getUserId()
+        );
         return this.userMapper.mapOutUserToUserResponse(user);
     }
 

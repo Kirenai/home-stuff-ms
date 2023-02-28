@@ -3,6 +3,7 @@ package me.kirenai.re.role.service;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.mapper.RoleMapper;
 import me.kirenai.re.role.repository.RoleRepository;
+import me.kirenai.re.role.repository.RoleUserRepository;
 import me.kirenai.re.role.util.RoleMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,8 @@ class RoleServiceTest {
     private RoleService roleService;
     @Mock
     private RoleRepository roleRepository;
+    @Mock
+    private RoleUserRepository roleUserRepository;
     @Mock
     private RoleMapper roleMapper;
 
@@ -70,6 +73,24 @@ class RoleServiceTest {
     }
 
     @Test
+    @DisplayName("Should find a list of roles by userId")
+    void shouldFindRolesByUserIdTest() {
+        RoleResponse roleResponse = RoleMocks.getRoleResponse();
+
+        when(this.roleUserRepository.findByIdUserId(anyLong()))
+                .thenReturn(RoleMocks.getRoleUserList());
+        when(this.roleMapper.mapOutRoleToRoleResponse(any()))
+                .thenReturn(roleResponse);
+
+        List<RoleResponse> roles = this.roleService.findAllByUserId(1L);
+
+        assertEquals(roleResponse, roles.get(0));
+
+        verify(this.roleUserRepository, times(1)).findByIdUserId(anyLong());
+        verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
+    }
+
+    @Test
     @DisplayName("Should create a role")
     void shouldCreateRoleTest() {
         RoleResponse roleResponse = RoleMocks.getRoleResponse();
@@ -83,6 +104,18 @@ class RoleServiceTest {
 
         verify(this.roleMapper).mapInRoleRequestToRole(any());
         verify(this.roleMapper).mapOutRoleToRoleResponse(any());
+    }
+
+    @Test
+    @DisplayName("Should create role user")
+    void shouldCreateRoleUserTest() {
+        when(this.roleRepository.findByName(anyString()))
+                .thenReturn(Optional.of(RoleMocks.getRole()));
+
+        this.roleService.createRoleUser(1L);
+
+        verify(this.roleRepository, times(1)).findByName(anyString());
+        verify(this.roleUserRepository, times(1)).save(any());
     }
 
     @Test
