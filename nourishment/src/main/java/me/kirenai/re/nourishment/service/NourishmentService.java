@@ -2,6 +2,8 @@ package me.kirenai.re.nourishment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.nourishment.api.CategoryManager;
+import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.CategoryResponse;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
@@ -9,13 +11,7 @@ import me.kirenai.re.nourishment.dto.UserResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
-import me.kirenai.re.nourishment.util.NourishmentClient;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,13 +22,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class NourishmentService {
 
-    private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
-    private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/v0/categories/{categoryId}";
-
     private final NourishmentRepository nourishmentRepository;
     private final NourishmentMapper mapper;
-    private final NourishmentClient client;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserManager userManager;
+    private final CategoryManager categoryManager;
 
     public List<NourishmentResponse> findAll(Pageable pageable) {
         log.info("Invoking NourishmentService.findAll method");
@@ -70,24 +63,9 @@ public class NourishmentService {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
-        HttpHeaders currentTokenAsHeader = this.jwtTokenProvider.getCurrentTokenAsHeader();
-        ResponseEntity<UserResponse> userEntity = this.client.exchange(
-                USER_URL_GET_ONE,
-                HttpMethod.GET,
-                new HttpEntity<>(currentTokenAsHeader),
-                UserResponse.class,
-                userId
-        );
-        UserResponse userResponse = userEntity.getBody();
+        UserResponse userResponse = this.userManager.findUser(userId);
         if (Objects.nonNull(userResponse)) nourishment.setUserId(userResponse.getUserId());
-        ResponseEntity<CategoryResponse> categoryEntity = this.client.exchange(
-                CATEGORY_URL_GET_ONE,
-                HttpMethod.GET,
-                new HttpEntity<>(currentTokenAsHeader),
-                CategoryResponse.class,
-                categoryId
-        );
-        CategoryResponse categoryResponse = categoryEntity.getBody();
+        CategoryResponse categoryResponse = this.categoryManager.findCategory(categoryId);
         if (Objects.nonNull(categoryResponse)) nourishment.setCategoryId(categoryResponse.getCategoryId());
         this.nourishmentRepository.save(nourishment);
         return this.mapper.mapOutNourishmentToNourishmentResponse(nourishment);

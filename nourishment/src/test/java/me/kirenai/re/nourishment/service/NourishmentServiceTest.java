@@ -1,16 +1,14 @@
 package me.kirenai.re.nourishment.service;
 
-import me.kirenai.re.nourishment.dto.CategoryResponse;
+import me.kirenai.re.nourishment.api.CategoryManager;
+import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
-import me.kirenai.re.nourishment.dto.UserResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
 import me.kirenai.re.nourishment.util.CategoryMocks;
-import me.kirenai.re.nourishment.util.NourishmentClient;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
 import me.kirenai.re.nourishment.util.UserMocks;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,9 +35,9 @@ class NourishmentServiceTest {
     @Mock
     private NourishmentMapper mapper;
     @Mock
-    private NourishmentClient client;
+    private UserManager userManager;
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private CategoryManager categoryManager;
 
     @Test
     @DisplayName("Should find a list of nourishment")
@@ -140,10 +138,10 @@ class NourishmentServiceTest {
     void createTest() {
         when(this.mapper.mapInNourishmentRequestToNourishment(any()))
                 .thenReturn(NourishmentMocks.getNourishment());
-        when(this.client.exchange(anyString(), any(), any(), eq(UserResponse.class), any()))
-                .thenReturn(UserMocks.getUserResponseEntity());
-        when(this.client.exchange(anyString(), any(), any(), eq(CategoryResponse.class), any()))
-                .thenReturn(CategoryMocks.getCategoryResponseEntity());
+        when(this.userManager.findUser(anyLong()))
+                .thenReturn(UserMocks.getUserResponse());
+        when(this.categoryManager.findCategory(anyLong()))
+                .thenReturn(CategoryMocks.getCategoryResponse());
         when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
                 .thenReturn(NourishmentMocks.getNourishmentResponse());
 
@@ -153,7 +151,8 @@ class NourishmentServiceTest {
         assertNotNull(response);
 
         verify(this.mapper, times(1)).mapInNourishmentRequestToNourishment(any());
-        verify(this.client, times(2)).exchange(anyString(), any(), any(), any(), any());
+        verify(this.userManager, times(1)).findUser(anyLong());
+        verify(this.categoryManager, times(1)).findCategory(anyLong());
         verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
     }
 
