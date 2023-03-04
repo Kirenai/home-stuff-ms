@@ -31,7 +31,7 @@ class CategoryManagerTest {
                 .thenReturn(CategoryMocks.getCategoryResponseEntity());
         this.categoryManager.findCategory(1L);
         verify(this.restTemplate, times(1)).exchange(anyString(), any(), any(), eq(CategoryResponse.class), anyLong());
-        verify(this.jwtTokenProvider, timeout(1)).getCurrentTokenAsHeader();
+        verify(this.jwtTokenProvider, times(1)).getCurrentTokenAsHeader();
     }
 
 }
