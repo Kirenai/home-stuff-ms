@@ -20,6 +20,8 @@ public class UserManager {
     private final JwtTokenProvider jwtTokenProvider;
 
     public UserResponse findUser(Long userId) {
+        log.info("Invoking UserManager.findUser method");
+        log.info("Call user service");
         return this.restTemplate.exchange(
                 USER_URL_GET_ONE,
                 HttpMethod.GET,
