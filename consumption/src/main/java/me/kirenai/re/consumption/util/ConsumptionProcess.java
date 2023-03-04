@@ -5,22 +5,15 @@ import me.kirenai.re.consumption.dto.NourishmentRequest;
 import me.kirenai.re.consumption.dto.NourishmentResponse;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 
 import java.util.Objects;
 
 @Slf4j
 public class ConsumptionProcess {
 
-    private static final String NOURISHMENT_PUT = "http://NOURISHMENT/api/v0/nourishments/{nourishmentId}";
-
-    public static void process(Consumption consumption,
-                               NourishmentResponse nourishmentResponse,
-                               ConsumptionClient client,
-                               ConsumptionMapper mapper,
-                               JwtTokenProvider jwtTokenProvider) {
+    public static NourishmentRequest process(Consumption consumption,
+                                             NourishmentResponse nourishmentResponse,
+                                             ConsumptionMapper mapper) {
         log.info("Invoking ConsumptionProcess.process method");
         NourishmentRequest nourishmentRequest = mapper.mapInNourishmentResponseToNourishmentRequest(nourishmentResponse);
         if (Objects.nonNull(consumption.getUnit())) {
@@ -44,13 +37,7 @@ public class ConsumptionProcess {
                 nourishmentRequest.setPercentage(0);
             }
         }
-        client.exchange(
-                NOURISHMENT_PUT,
-                HttpMethod.PUT,
-                new HttpEntity<>(nourishmentRequest, jwtTokenProvider.getCurrentTokenAsHeader()),
-                NourishmentResponse.class,
-                nourishmentResponse.getNourishmentId()
-        );
+        return nourishmentRequest;
     }
 
 }

@@ -1,16 +1,14 @@
 package me.kirenai.re.consumption.service;
 
+import me.kirenai.re.consumption.api.NourishmentManager;
+import me.kirenai.re.consumption.api.UserManager;
 import me.kirenai.re.consumption.dto.ConsumptionResponse;
-import me.kirenai.re.consumption.dto.NourishmentResponse;
-import me.kirenai.re.consumption.dto.UserResponse;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
 import me.kirenai.re.consumption.repository.ConsumptionRepository;
-import me.kirenai.re.consumption.util.ConsumptionClient;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
 import me.kirenai.re.consumption.util.NourishmentMocks;
 import me.kirenai.re.consumption.util.UserMocks;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,9 +35,9 @@ class ConsumptionServiceTest {
     @Mock
     private ConsumptionMapper mapper;
     @Mock
-    private ConsumptionClient client;
+    private UserManager userManager;
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private NourishmentManager nourishmentManager;
 
     @Test
     @DisplayName("Should find a consumption list when finding all")
@@ -83,10 +81,10 @@ class ConsumptionServiceTest {
 
         when(this.mapper.mapInConsumptionRequestToConsumption(any()))
                 .thenReturn(ConsumptionMocks.getConsumption());
-        when(this.client.exchange(anyString(), any(), any(), eq(UserResponse.class), any()))
-                .thenReturn(UserMocks.getUserResponseEntity());
-        when(this.client.exchange(anyString(), any(), any(), eq(NourishmentResponse.class), any()))
-                .thenReturn(NourishmentMocks.getNourishmentResponseEntity());
+        when(this.userManager.findUser(anyLong()))
+                .thenReturn(UserMocks.getUserResponse());
+        when(this.nourishmentManager.findNourishment(anyLong()))
+                .thenReturn(NourishmentMocks.getNourishmentResponse());
         when(this.mapper.mapInNourishmentResponseToNourishmentRequest(any()))
                 .thenReturn(NourishmentMocks.getNourishmentRequest());
         when(this.mapper.mapOutConsumptionToConsumptionResponse(any())).thenReturn(consumptionResponse);
@@ -97,7 +95,9 @@ class ConsumptionServiceTest {
         assertEquals(consumptionResponse, response);
 
         verify(this.mapper, times(1)).mapOutConsumptionToConsumptionResponse(any());
-        verify(this.client, times(3)).exchange(anyString(), any(), any(), any(), any());
+        verify(this.userManager, times(1)).findUser(anyLong());
+        verify(this.nourishmentManager, times(1)).findNourishment(anyLong());
+        verify(this.nourishmentManager, times(1)).updateNourishment(any(), any());
         verify(this.mapper, times(1)).mapOutConsumptionToConsumptionResponse(any());
     }
 
