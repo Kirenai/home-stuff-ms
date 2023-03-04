@@ -2,19 +2,16 @@ package me.kirenai.re.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.user.api.RoleManager;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.entity.User;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -23,13 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    public static final String POST_ROLES_USER_URL = "http://ROLE/api/v0/roles/user/{userId}";
-
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final RestTemplate restTemplate;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final RoleManager roleManager;
 
     public List<UserResponse> findAll(Pageable pageable) {
         log.info("Invoking UserService.findAll method");
@@ -58,13 +52,7 @@ public class UserService {
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         this.userRepository.save(user);
-        this.restTemplate.exchange(
-                POST_ROLES_USER_URL,
-                HttpMethod.POST,
-                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                Void.class,
-                user.getUserId()
-        );
+        this.roleManager.createRoleUser(user);
         return this.userMapper.mapOutUserToUserResponse(user);
     }
 

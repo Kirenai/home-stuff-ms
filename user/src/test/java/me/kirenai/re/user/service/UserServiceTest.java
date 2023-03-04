@@ -1,6 +1,6 @@
 package me.kirenai.re.user.service;
 
-import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.user.api.RoleManager;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.mapper.UserMapper;
@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,11 +34,9 @@ class UserServiceTest {
     @Mock
     private UserMapper userMapper;
     @Mock
-    private RestTemplate restTemplate;
-    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private RoleManager roleManager;
 
     @Test
     @DisplayName("Should find a list of users")
@@ -91,8 +88,7 @@ class UserServiceTest {
         assertEquals(userResponse, response);
 
         verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
-        verify(this.restTemplate, times(1)).exchange(anyString(), any(), any(), eq(Void.class), any(Object.class));
-        verify(this.jwtTokenProvider, times(1)).getCurrentTokenAsHeader();
+        verify(this.roleManager, times(1)).createRoleUser(any());
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }
 
