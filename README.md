@@ -8,3 +8,4 @@
 - security
 - eureka-server
 - auth
+- api-gateway
