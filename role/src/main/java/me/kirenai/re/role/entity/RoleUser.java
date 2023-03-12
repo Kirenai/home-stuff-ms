@@ -19,7 +19,7 @@ public class RoleUser {
 
     @ManyToOne
     @MapsId("role_id")
-    @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "fk_role_id"))
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @Transient
