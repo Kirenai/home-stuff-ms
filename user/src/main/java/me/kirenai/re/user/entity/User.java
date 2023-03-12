@@ -2,16 +2,18 @@ package me.kirenai.re.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import me.kirenai.re.security.model.Auditable;
 
 @Builder
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "unq_username", columnNames = {"username"})
 })
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
