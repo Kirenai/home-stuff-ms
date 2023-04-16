@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.user.entity.User;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -16,19 +16,19 @@ public class RoleManager {
 
     public static final String POST_ROLE_CREATE_URL = "http://ROLE/api/v0/roles/user/{userId}";
 
-    private final RestTemplate restTemplate;
+    private final WebClient.Builder webClient;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void createRoleUser(User user) {
+    public Mono<Void> createRoleUser(User user) {
         log.info("Invoking RoleManager.createRoleUser method");
         log.info("Call role service");
-        this.restTemplate.exchange(
-                POST_ROLE_CREATE_URL,
-                HttpMethod.POST,
-                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                Void.class,
-                user.getUserId()
-        );
+        return this.webClient
+                .build()
+                .post()
+                .uri(POST_ROLE_CREATE_URL, user.getUserId())
+                .header(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getCurrentToken())
+                .retrieve()
+                .bodyToMono(Void.class);
     }
 
 }

@@ -1,59 +1,59 @@
 package me.kirenai.re.security.util;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.security.dto.RoleResponse;
 import me.kirenai.re.security.dto.UserResponse;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.security.service.AuthUserDetails;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SecurityUtil {
 
     public static final String GET_ONE_USER_DETAILS_URL = "http://USER/api/v0/users/details/{username}";
     public static final String GET_ROLES_USER_URL = "http://ROLE/api/v0/roles/user/{userId}";
-    private final RestTemplate restTemplate;
+    private final WebClient.Builder webClient;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public UserDetails getUserDetails(String username) {
+    public Mono<UserDetails> getUserDetails(String username) {
+        log.info("Invoke SecurityUtil.getUserDetails method");
         String token = this.jwtTokenProvider.generateInternalJwtToken();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token);
-        ResponseEntity<UserResponse> userEntity = this.restTemplate.exchange(
-                GET_ONE_USER_DETAILS_URL,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                UserResponse.class,
-                username
-        );
-        UserResponse userResponse = userEntity.getBody();
-        if (Objects.isNull(userResponse)) throw new IllegalStateException("Not Found");
-        ResponseEntity<RoleResponse[]> roleEntity = this.restTemplate.exchange(
-                GET_ROLES_USER_URL,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                RoleResponse[].class,
-                userResponse.getUserId()
-        );
-        RoleResponse[] roleResponse = roleEntity.getBody();
-        if (Objects.isNull(roleResponse)) throw new IllegalStateException("Not Found");
-        return new AuthUserDetails(
-                userResponse.getUserId(),
-                userResponse.getUsername(),
-                userResponse.getPassword(),
-                Stream.of(roleResponse).map(role -> new SimpleGrantedAuthority(role.getName())).toList()
-        );
+        Mono<UserResponse> userResponseMono = this.webClient
+                .build()
+                .get()
+                .uri(GET_ONE_USER_DETAILS_URL, username)
+                .header(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token)
+                .retrieve()
+                .bodyToMono(UserResponse.class);
+//        Flux<SimpleGrantedAuthority> roleResponseFlux = userResponseMono
+//                .flatMapMany(user -> this.webClient
+//                        .get()
+//                        .uri(GET_ROLES_USER_URL, user.getUserId())
+//                        .header(HttpHeaders.AUTHORIZATION, this.jwtTokenProvider.getTokenPrefix() + token)
+//                        .retrieve()
+//                        .bodyToFlux(RoleResponse.class)
+//                        .flatMap(Flux::just)
+//                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+//                );
+        return userResponseMono
+                .map(user -> new AuthUserDetails(
+                                user.getUserId(),
+                                user.getUsername(),
+                                user.getPassword(),
+                                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        )
+                );
     }
 
 }

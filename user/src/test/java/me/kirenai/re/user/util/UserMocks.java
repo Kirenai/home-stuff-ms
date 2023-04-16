@@ -7,6 +7,7 @@ import me.kirenai.re.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,6 +81,14 @@ public class UserMocks {
                 .roleId(1L)
                 .name("ROLE_USER")
                 .build();
+    }
+
+    public static Flux<User> getFluxUsers() {
+        return Flux.just(
+                getUserMock(1L, "username1", "password1", "firstName1", "lastName1", 10),
+                getUserMock(2L, "username2", "password2", "firstName2", "lastName2", 15),
+                getUserMock(3L, "username3", "password3", "firstName3", "lastName3", 20)
+        );
     }
 
 }

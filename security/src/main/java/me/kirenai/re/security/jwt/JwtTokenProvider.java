@@ -3,7 +3,6 @@ package me.kirenai.re.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
     @Value(value = "${application.jwt.internal.roleName}")
     private String roleName;
 
-    private final HttpServletRequest request;
+    private ServerHttpRequest request;
 
     public String getJwtAuthenticationHeader() {
         return HttpHeaders.AUTHORIZATION;
@@ -59,10 +59,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    @Deprecated
     public HttpHeaders getCurrentTokenAsHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set(this.getJwtAuthenticationHeader(), this.request.getHeader(this.getJwtAuthenticationHeader()));
+        headers.set(this.getJwtAuthenticationHeader(), this.request.getHeaders().getFirst(this.getJwtAuthenticationHeader()));
         return headers;
+    }
+
+    public String getCurrentToken() {
+        return this.request.getHeaders().getFirst(this.getJwtAuthenticationHeader());
     }
 
     public String generateInternalJwtToken() {
@@ -76,8 +81,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getJwtTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(this.getJwtAuthenticationHeader());
+    public String getJwtTokenFromRequest(ServerHttpRequest request) {
+        String bearerToken = request.getHeaders().getFirst(this.getJwtAuthenticationHeader());
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(this.getTokenPrefix())) {
             return bearerToken.substring(this.getTokenPrefix().length());
         }

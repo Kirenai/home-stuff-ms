@@ -2,14 +2,12 @@ package me.kirenai.re.nourishment.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import me.kirenai.re.security.model.Auditable;
 
 /**
  * Nourishment
  *
  * @author Kirenai
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,7 +16,7 @@ import me.kirenai.re.security.model.Auditable;
 @Table(name = "nourishments", uniqueConstraints = {
         @UniqueConstraint(name = "unq_name", columnNames = {"name"})
 })
-public class Nourishment extends Auditable {
+public class Nourishment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
