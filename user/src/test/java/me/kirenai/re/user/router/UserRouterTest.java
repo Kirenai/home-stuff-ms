@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
@@ -22,8 +23,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @WithMockUser
@@ -63,12 +63,11 @@ class UserRouterTest {
                 .value(UserResponse::getAge, equalTo(response.getAge()));
     }
 
-
     @Test
     @DisplayName("Should create user")
     void shouldCreateUser() {
         UserResponse response = UserMocks.getUserResponse();
-        when(this.userService.create(any()))
+        when(this.userService.create(any(), anyString()))
                 .thenReturn(Mono.just(response));
 
         this.webTestClient
@@ -77,6 +76,7 @@ class UserRouterTest {
                 .uri(URL.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                 .body(Mono.just(UserMocks.getUserRequest()), UserRequest.class)
                 .exchange()
                 .expectStatus()

@@ -38,13 +38,16 @@ public class UserService {
     }
 
     @Transactional
-    public Mono<UserResponse> create(UserRequest userRequest) {
+    public Mono<UserResponse> create(UserRequest userRequest, String token) {
         log.info("Invoking UserService.create method");
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        Mono<User> userMono = this.userRepository.save(user);
-        Mono<Void> createRoleMono = userMono.flatMap(this.roleManager::createRoleUser);
-        return createRoleMono.then(userMono.map(this.userMapper::mapOutUserToUserResponse));
+        return this.userRepository.save(user)
+                .flatMap(userSaved -> {
+                    this.roleManager.createRoleUser(userSaved, token);
+                    return Mono.just(userSaved);
+                })
+                .map(this.userMapper::mapOutUserToUserResponse);
     }
 
     public Mono<UserResponse> update(Long id, UserRequest userRequest) {

@@ -1,14 +1,11 @@
 package me.kirenai.re.role.repository;
 
 import me.kirenai.re.role.entity.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+public interface RoleRepository extends ReactiveCrudRepository<Role, Long> {
 
-@Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
-
-    Optional<Role> findByName(String name);
+    Mono<Role> findByName(String name);
 
 }

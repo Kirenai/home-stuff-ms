@@ -89,17 +89,17 @@ class UserServiceTest {
 
         when(this.userMapper.mapInUserRequestToUser(any())).thenReturn(UserMocks.getUser());
         when(this.userRepository.save(any())).thenReturn(Mono.just(UserMocks.getUser()));
-        when(this.roleManager.createRoleUser(any())).thenReturn(Mono.empty());
+        when(this.roleManager.createRoleUser(any(), anyString())).thenReturn(Mono.empty());
         when(this.userMapper.mapOutUserToUserResponse(any())).thenReturn(userResponse);
 
-        Mono<UserResponse> response = this.userService.create(new UserRequest());
+        Mono<UserResponse> response = this.userService.create(new UserRequest(), "token");
 
         StepVerifier.create(response.log())
                 .expectNext(userResponse)
                 .verifyComplete();
 
         verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
-        verify(this.roleManager, times(1)).createRoleUser(any());
+        verify(this.roleManager, times(1)).createRoleUser(any(), anyString());
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }
 

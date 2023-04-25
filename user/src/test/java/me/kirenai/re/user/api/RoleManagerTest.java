@@ -26,7 +26,7 @@ class RoleManagerTest {
     @DisplayName("Should call role service")
     @Disabled
     public void createRoleUserTest() {
-        this.roleManager.createRoleUser(UserMocks.getUser());
+        this.roleManager.createRoleUser(UserMocks.getUser(), "token");
         verify(this.restTemplate, times(1)).exchange(anyString(), any(), any(), eq(Void.class), anyLong());
     }
 

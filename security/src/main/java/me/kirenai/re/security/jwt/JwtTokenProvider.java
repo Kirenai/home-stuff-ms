@@ -42,9 +42,7 @@ public class JwtTokenProvider {
     @Value(value = "${application.jwt.internal.roleName}")
     private String roleName;
 
-    private ServerHttpRequest request;
-
-    public String getJwtAuthenticationHeader() {
+    public String getAuthorizationHeader() {
         return HttpHeaders.AUTHORIZATION;
     }
 
@@ -62,12 +60,8 @@ public class JwtTokenProvider {
     @Deprecated
     public HttpHeaders getCurrentTokenAsHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set(this.getJwtAuthenticationHeader(), this.request.getHeaders().getFirst(this.getJwtAuthenticationHeader()));
+        headers.set(this.getAuthorizationHeader(), "");
         return headers;
-    }
-
-    public String getCurrentToken() {
-        return this.request.getHeaders().getFirst(this.getJwtAuthenticationHeader());
     }
 
     public String generateInternalJwtToken() {
@@ -82,7 +76,7 @@ public class JwtTokenProvider {
     }
 
     public String getJwtTokenFromRequest(ServerHttpRequest request) {
-        String bearerToken = request.getHeaders().getFirst(this.getJwtAuthenticationHeader());
+        String bearerToken = request.getHeaders().getFirst(this.getAuthorizationHeader());
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(this.getTokenPrefix())) {
             return bearerToken.substring(this.getTokenPrefix().length());
         }

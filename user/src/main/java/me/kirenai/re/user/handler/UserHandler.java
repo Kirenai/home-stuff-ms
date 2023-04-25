@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -40,13 +41,14 @@ public class UserHandler {
     public Mono<ServerResponse> save(ServerRequest request) {
         log.info("Invoking UserHandler.save method");
         Mono<UserRequest> userRequestMono = request.bodyToMono(UserRequest.class);
+        String token = request.headers().firstHeader(HttpHeaders.AUTHORIZATION);
         return userRequestMono.flatMap(userRequest -> {
             BindingResult bindingResult = new BeanPropertyBindingResult(userRequest, UserRequest.class.getName());
             validator.validate(bindingResult);
             if (bindingResult.hasErrors()) {
                 return ServerResponse.badRequest().bodyValue(bindingResult.getAllErrors());
             }
-            return this.userService.create(userRequest)
+            return this.userService.create(userRequest, token)
                     .flatMap(userResponse -> ServerResponse
                             .status(HttpStatus.CREATED)
                             .contentType(MediaType.APPLICATION_JSON)

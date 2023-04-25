@@ -1,27 +1,30 @@
 package me.kirenai.re.role.entity;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.util.Map;
 
 @Data
 @Builder
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "roles", uniqueConstraints = {
-        @UniqueConstraint(name = "unq_name", columnNames = {"name"})
-})
+@Table(name = "roles")
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id", nullable = false)
     private Long roleId;
-
-    @Column(name = "name", nullable = false, length = 20)
     private String name;
+
+    public static Role fromRow(Map<String, Object> row) {
+        return Role.builder()
+                .roleId((Long.parseLong(row.get("r_roleId").toString())))
+                .name((String) row.get("r_name"))
+                .build();
+    }
 
 }

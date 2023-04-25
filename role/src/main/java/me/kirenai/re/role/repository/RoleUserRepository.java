@@ -1,15 +1,13 @@
 package me.kirenai.re.role.repository;
 
 import me.kirenai.re.role.entity.RoleUser;
-import me.kirenai.re.role.entity.RoleUserId;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
+public interface RoleUserRepository {
 
-@Repository
-public interface RoleUserRepository extends JpaRepository<RoleUser, RoleUserId> {
+    Flux<RoleUser> findByUserId(Long userId);
 
-    List<RoleUser> findByIdUserId(Long userId);
+    Mono<RoleUser> saveRoleUser(RoleUser roleUser);
 
 }
