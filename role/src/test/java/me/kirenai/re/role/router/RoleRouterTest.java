@@ -20,7 +20,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -53,6 +56,23 @@ class RoleRouterTest {
                 .exchange()
                 .expectStatus()
                 .isOk();
+    }
+
+    @Test
+    @DisplayName("Should get roles by user id")
+    void shouldGetAllRolesTest() {
+        List<RoleResponse> roleResponseList = RoleMocks.getRoleResponseList();
+        when(this.roleService.findAllByUserId(anyLong())).thenReturn(Flux.fromIterable(roleResponseList));
+
+        this.webTestClient
+                .get()
+                .uri(URL.append("/user/1").toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(RoleResponse.class)
+                .hasSize(roleResponseList.size());
     }
 
     @Test

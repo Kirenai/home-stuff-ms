@@ -6,9 +6,9 @@ import me.kirenai.re.role.entity.Role;
 import me.kirenai.re.role.entity.RoleUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class RoleMocks {
@@ -61,6 +61,12 @@ public class RoleMocks {
         return RoleUser.builder()
                 .userId(1L)
                 .roleId(getRole().getRoleId())
+                .build();
+    }
+
+    public static RoleUser getRoleUserMockList() {
+        return RoleUser.builder()
+                .roles(Collections.singletonList(getRolePage().getContent().get(0)))
                 .build();
     }
 

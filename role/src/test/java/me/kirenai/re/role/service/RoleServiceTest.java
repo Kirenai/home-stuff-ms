@@ -77,23 +77,26 @@ class RoleServiceTest {
         verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
     }
 
-//    @Test
-//    @DisplayName("Should find a list of roles by userId")
-//    void shouldFindRolesByUserIdTest() {
-//        RoleResponse roleResponse = RoleMocks.getRoleResponse();
-//
-//        when(this.roleUserRepository.findByUserId(anyLong()))
-//                .thenReturn(RoleMocks.getRoleUserFlux());
-//        when(this.roleMapper.mapOutRoleToRoleResponse(any()))
-//                .thenReturn(roleResponse);
-//
-//        Flux<RoleResponse> roles = this.roleService.findAllByUserId(1L);
-//
-////        assertEquals(roleResponse, roles.get(0));
-//
-//        verify(this.roleUserRepository, times(1)).findByUserId(anyLong());
-//        verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
-//    }
+    @Test
+    @DisplayName("Should find a list of roles by userId")
+    void shouldFindRolesByUserIdTest() {
+        RoleResponse roleResponse = RoleMocks.getRoleResponse();
+
+        when(this.roleUserRepository.findByUserId(anyLong()))
+                .thenReturn(Flux.just(RoleMocks.getRoleUserMockList()));
+        when(this.roleMapper.mapOutRoleToRoleResponse(any()))
+                .thenReturn(roleResponse);
+
+        Flux<RoleResponse> response = this.roleService.findAllByUserId(1L);
+
+        StepVerifier
+                .create(response)
+                .expectNext(roleResponse)
+                .verifyComplete();
+
+        verify(this.roleUserRepository, times(1)).findByUserId(anyLong());
+        verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
+    }
 
     @Test
     @DisplayName("Should create a role")
