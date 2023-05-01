@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.dto.UserResponse;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -16,19 +15,19 @@ public class UserManager {
 
     private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
 
-    private final RestTemplate restTemplate;
+    private final WebClient.Builder webClient;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public UserResponse findUser(Long userId) {
+    public Mono<UserResponse> findUser(Long userId, String token) {
         log.info("Invoking UserManager.findUser method");
         log.info("Call user service");
-        return this.restTemplate.exchange(
-                USER_URL_GET_ONE,
-                HttpMethod.GET,
-                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                UserResponse.class,
-                userId
-        ).getBody();
+        return this.webClient
+                .build()
+                .get()
+                .uri(USER_URL_GET_ONE, userId)
+                .header(this.jwtTokenProvider.getAuthorizationHeader(), token)
+                .retrieve()
+                .bodyToMono(UserResponse.class);
     }
 
 }
