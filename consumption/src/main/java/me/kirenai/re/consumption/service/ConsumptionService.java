@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.consumption.api.NourishmentManager;
 import me.kirenai.re.consumption.api.UserManager;
-import me.kirenai.re.consumption.dto.*;
+import me.kirenai.re.consumption.dto.ConsumptionRequest;
+import me.kirenai.re.consumption.dto.ConsumptionResponse;
+import me.kirenai.re.consumption.dto.NourishmentRequest;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
 import me.kirenai.re.consumption.repository.ConsumptionRepository;
 import me.kirenai.re.consumption.util.ConsumptionProcess;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -25,35 +24,39 @@ public class ConsumptionService {
     private final UserManager userManager;
     private final NourishmentManager nourishmentManager;
 
-    public List<ConsumptionResponse> findAll(Pageable pageable) {
-        log.info("Invoking ConsumptionService.findAll method");
-        return this.consumptionRepository.findAll(pageable)
-                .getContent()
-                .stream()
-                .map(this.mapper::mapOutConsumptionToConsumptionResponse)
-                .toList();
-    }
+//    public List<ConsumptionResponse> findAll(Pageable pageable) {
+//        log.info("Invoking ConsumptionService.findAll method");
+//        return this.consumptionRepository.findAll(pageable)
+//                .getContent()
+//                .stream()
+//                .map(this.mapper::mapOutConsumptionToConsumptionResponse)
+//                .toList();
+//    }
 
-    public ConsumptionResponse findOne(Long consumptionId) {
+    public Mono<ConsumptionResponse> findOne(Long consumptionId) {
         log.info("Invoking ConsumptionService.findOne method");
-        Consumption consumption = this.consumptionRepository.findById(consumptionId)
-                .orElseThrow();
-        return this.mapper.mapOutConsumptionToConsumptionResponse(consumption);
+        return this.consumptionRepository.findById(consumptionId)
+                .map(this.mapper::mapOutConsumptionToConsumptionResponse);
     }
 
-    public ConsumptionResponse create(Long nourishmentId, Long userId, ConsumptionRequest consumptionDto) {
+    public Mono<ConsumptionResponse> create(Long nourishmentId, Long userId, ConsumptionRequest consumptionRequest,
+                                            String token) {
         log.info("Invoking ConsumptionService.create method");
-        Consumption consumption = this.mapper.mapInConsumptionRequestToConsumption(consumptionDto);
-        UserResponse userResponse = this.userManager.findUser(userId);
-        if (Objects.nonNull(userResponse)) consumption.setUserId(userResponse.getUserId());
-        NourishmentResponse nourishmentResponse = this.nourishmentManager.findNourishment(nourishmentId);
-        if (Objects.nonNull(nourishmentResponse)) {
-            consumption.setNourishmentId(nourishmentResponse.getNourishmentId());
-            NourishmentRequest nourishmentRequest = ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
-            this.nourishmentManager.updateNourishment(nourishmentRequest, nourishmentResponse);
-        }
-        this.consumptionRepository.save(consumption);
-        return this.mapper.mapOutConsumptionToConsumptionResponse(consumption);
+        Consumption consumption = this.mapper.mapInConsumptionRequestToConsumption(consumptionRequest);
+        return this.userManager.findUser(userId, token)
+                .flatMap(userResponse -> {
+                    consumption.setUserId(userResponse.getUserId());
+                    return Mono.just(consumption);
+                })
+                .flatMap(c -> this.nourishmentManager.findNourishment(nourishmentId, token)
+                        .flatMap(nourishmentResponse -> {
+                            c.setNourishmentId(nourishmentResponse.getNourishmentId());
+                            NourishmentRequest nourishmentRequest = ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
+                            this.nourishmentManager.updateNourishment(nourishmentRequest, nourishmentResponse, token).subscribe();
+                            return Mono.just(c);
+                        }))
+                .flatMap(this.consumptionRepository::save)
+                .map(this.mapper::mapOutConsumptionToConsumptionResponse);
     }
 
 }

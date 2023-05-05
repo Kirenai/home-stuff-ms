@@ -4,20 +4,10 @@ server:
 spring:
   application:
     name: consumption
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/hs_consumption?serverTimezone=UTC
+  r2dbc:
+    url: r2dbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/hs_consumption
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    generate-ddl: true
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
 eureka:
   client:
@@ -31,4 +21,4 @@ application:
     tokenExpirationAfterDays: 1
     internal:
       username: yelan
-      roleName: USER_ROLE
+      roleName: ROLE_USER

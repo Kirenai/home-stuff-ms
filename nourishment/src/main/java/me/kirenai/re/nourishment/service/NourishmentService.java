@@ -71,7 +71,7 @@ public class NourishmentService {
         return this.nourishmentRepository.findById(nourishmentId)
                 .flatMap(nourishment -> {
                     nourishment.setName(nourishmentRequest.getName());
-                    nourishment.setDescription(nourishment.getDescription());
+                    nourishment.setDescription(nourishmentRequest.getDescription());
                     nourishment.setImageUrl(nourishmentRequest.getImageUrl());
                     if (Objects.nonNull(nourishmentRequest.getUnit())) {
                         nourishment.setUnit(nourishmentRequest.getUnit());

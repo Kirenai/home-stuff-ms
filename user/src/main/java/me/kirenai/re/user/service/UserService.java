@@ -44,7 +44,7 @@ public class UserService {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user)
                 .flatMap(userSaved -> {
-                    this.roleManager.createRoleUser(userSaved, token);
+                    this.roleManager.createRoleUser(userSaved, token).subscribe();
                     return Mono.just(userSaved);
                 })
                 .map(this.userMapper::mapOutUserToUserResponse);

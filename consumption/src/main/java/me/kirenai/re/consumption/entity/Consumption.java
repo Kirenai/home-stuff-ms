@@ -1,10 +1,12 @@
 package me.kirenai.re.consumption.entity;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Consumption
@@ -14,26 +16,20 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-@Entity
+@RequiredArgsConstructor
 @Table(name = "consumptions")
 public class Consumption {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "consumption_id")
+    @Column("consumption_id")
     private Long consumptionId;
-
-    @Column(name = "unit")
+    @Column("unit")
     private Integer unit;
-
-    @Column(name = "percentage", precision = 3)
+    @Column("percentage")
     private Integer percentage;
-
-    @Column(name = "nourishment_id", nullable = false)
+    @Column("nourishment_id")
     private Long nourishmentId;
-
-    @Column(name = "user_id", nullable = false)
+    @Column("user_id")
     private Long userId;
 
 }

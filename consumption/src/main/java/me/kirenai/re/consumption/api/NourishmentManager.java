@@ -5,44 +5,45 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.consumption.dto.NourishmentRequest;
 import me.kirenai.re.consumption.dto.NourishmentResponse;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class NourishmentManager {
 
-    private static final String NOURISHMENT_GET_ONE_URL = "http://NOURISHMENT/api/v0/nourishments/{nourishmentsId}";
+    private static final String NOURISHMENT_GET_ONE_URL = "http://NOURISHMENT/api/v0/nourishments/{nourishmentId}";
     private static final String NOURISHMENT_PUT_URL = "http://NOURISHMENT/api/v0/nourishments/{nourishmentId}";
 
-    private final RestTemplate restTemplate;
+    private final WebClient.Builder webClient;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public NourishmentResponse findNourishment(Long nourishmentId) {
+    public Mono<NourishmentResponse> findNourishment(Long nourishmentId, String token) {
         log.info("Invoking NourishmentManager.findNourishment method");
-        log.info("Call nourishment service");
-        return this.restTemplate.exchange(
-                NOURISHMENT_GET_ONE_URL,
-                HttpMethod.GET,
-                new HttpEntity<>(this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                NourishmentResponse.class,
-                nourishmentId
-        ).getBody();
+        log.info("Call nourishment service findOne");
+        return this.webClient.build()
+                .get()
+                .uri(NOURISHMENT_GET_ONE_URL, nourishmentId)
+                .header(this.jwtTokenProvider.getAuthorizationHeader(), token)
+                .retrieve()
+                .bodyToMono(NourishmentResponse.class);
     }
 
-    public void updateNourishment(NourishmentRequest nourishmentRequest, NourishmentResponse nourishmentResponse) {
+    public Mono<Void> updateNourishment(NourishmentRequest nourishmentRequest, NourishmentResponse nourishmentResponse,
+                                        String token) {
         log.info("Invoking NourishmentManager.updateNourishment method");
-        log.info("Call nourishment service");
-        this.restTemplate.exchange(
-                NOURISHMENT_PUT_URL,
-                HttpMethod.PUT,
-                new HttpEntity<>(nourishmentRequest, this.jwtTokenProvider.getCurrentTokenAsHeader()),
-                Void.class,
-                nourishmentResponse.getNourishmentId()
-        );
+        log.info("Call nourishment service update");
+        return this.webClient.build()
+                .put()
+                .uri(NOURISHMENT_PUT_URL, nourishmentResponse.getNourishmentId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(nourishmentRequest), NourishmentRequest.class)
+                .header(this.jwtTokenProvider.getAuthorizationHeader(), token)
+                .retrieve()
+                .bodyToMono(Void.class);
     }
 
 }

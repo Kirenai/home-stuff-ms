@@ -6,6 +6,7 @@ import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.service.NourishmentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -35,7 +36,10 @@ public class NourishmentHandler {
         String isAvailable = request.pathVariable("isAvailable");
         return this.nourishmentService.findAllByIsAvailable(Boolean.valueOf(isAvailable))
                 .collectList()
-                .flatMap(nourishments -> ServerResponse.ok().bodyValue(nourishments));
+                .flatMap(nourishments -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(nourishments)
+                );
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
@@ -46,14 +50,21 @@ public class NourishmentHandler {
                 .flatMap(nourishmentRequest -> this.nourishmentService.create(
                         Long.valueOf(userId), Long.valueOf(categoryId), nourishmentRequest, token)
                 )
-                .flatMap(nourishment -> ServerResponse.status(HttpStatus.CREATED).bodyValue(nourishment));
+                .flatMap(nourishment -> ServerResponse.status(HttpStatus.CREATED)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(nourishment)
+                );
     }
 
     public Mono<ServerResponse> update(ServerRequest request) {
         String nourishmentId = request.pathVariable("nourishmentId");
         return request.bodyToMono(NourishmentRequest.class)
-                .flatMap(nourishmentRequest -> this.nourishmentService.update(Long.valueOf(nourishmentId), nourishmentRequest))
-                .flatMap(nourishment -> ServerResponse.ok().bodyValue(nourishment));
+                .flatMap(nourishmentRequest ->
+                        this.nourishmentService.update(Long.valueOf(nourishmentId), nourishmentRequest))
+                .flatMap(nourishment -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(nourishment)
+                );
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
