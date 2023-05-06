@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
-import me.kirenai.re.nourishment.dto.CategoryResponse;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
-import me.kirenai.re.nourishment.dto.UserResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
@@ -58,11 +56,15 @@ public class NourishmentService {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
         nourishment.setIsAvailable(Boolean.TRUE);
-        Mono<UserResponse> userResponse = this.userManager.findUser(userId, token);
-        userResponse.subscribe(user -> nourishment.setUserId(user.getUserId()));
-        Mono<CategoryResponse> categoryResponse = this.categoryManager.findCategory(categoryId, token);
-        categoryResponse.subscribe(category -> nourishment.setCategoryId(category.getCategoryId()));
-        return this.nourishmentRepository.save(nourishment)
+        return this.userManager.findUser(userId, token)
+                .flatMap(userResponse -> {
+                    nourishment.setUserId(userResponse.getUserId());
+                    return this.categoryManager.findCategory(categoryId, token);
+                })
+                .flatMap(categoryResponse -> {
+                    nourishment.setCategoryId(categoryResponse.getCategoryId());
+                    return this.nourishmentRepository.save(nourishment);
+                })
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 

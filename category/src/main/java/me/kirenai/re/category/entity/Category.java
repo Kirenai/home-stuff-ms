@@ -1,7 +1,9 @@
 package me.kirenai.re.category.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Categories
@@ -11,19 +13,15 @@ import lombok.*;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "categories", uniqueConstraints = {
-        @UniqueConstraint(name = "unq_name", columnNames = {"name"})
-})
+@RequiredArgsConstructor
+@Table(name = "categories")
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id", nullable = false)
+    @Column("category_id")
     private Long categoryId;
 
-    @Column(name = "name", nullable = false)
+    @Column("name")
     private String name;
 
 }

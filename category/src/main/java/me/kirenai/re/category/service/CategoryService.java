@@ -7,10 +7,8 @@ import me.kirenai.re.category.dto.CategoryResponse;
 import me.kirenai.re.category.entity.Category;
 import me.kirenai.re.category.mapper.CategoryMapper;
 import me.kirenai.re.category.repository.CategoryRepository;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -20,41 +18,41 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper mapper;
 
-    public List<CategoryResponse> findAll(Pageable pageable) {
-        log.info("Invoking CategoryService.findAll method");
-        return this.categoryRepository.findAll(pageable)
-                .getContent()
-                .stream()
-                .map(this.mapper::mapOutCategoryToCategoryResponse)
-                .toList();
-    }
+//    public List<CategoryResponse> findAll(Pageable pageable) {
+//        log.info("Invoking CategoryService.findAll method");
+//        return this.categoryRepository.findAll(pageable)
+//                .getContent()
+//                .stream()
+//                .map(this.mapper::mapOutCategoryToCategoryResponse)
+//                .toList();
+//    }
 
-    public CategoryResponse findOne(Long categoryId) {
+    public Mono<CategoryResponse> findOne(Long categoryId) {
         log.info("Invoking CategoryService.findOne method");
-        Category category = this.categoryRepository.findById(categoryId)
-                .orElseThrow();
-        return this.mapper.mapOutCategoryToCategoryResponse(category);
+        return this.categoryRepository.findById(categoryId)
+                .map(this.mapper::mapOutCategoryToCategoryResponse);
     }
 
-    public CategoryResponse create(CategoryRequest categoryRequest) {
+    public Mono<CategoryResponse> create(CategoryRequest categoryRequest) {
         log.info("Invoking CategoryService.create method");
         Category category = this.mapper.mapInCategoryRequestToCategory(categoryRequest);
-        this.categoryRepository.save(category);
-        return this.mapper.mapOutCategoryToCategoryResponse(category);
+        return this.categoryRepository.save(category)
+                .map(this.mapper::mapOutCategoryToCategoryResponse);
     }
 
-    public CategoryResponse update(Long categoryId, CategoryRequest categoryRequest) {
+    public Mono<CategoryResponse> update(Long categoryId, CategoryRequest categoryRequest) {
         log.info("Invoking CategoryService.update method");
-        Category category = this.categoryRepository.findById(categoryId)
-                .orElseThrow();
-        category.setName(categoryRequest.getName());
-        this.categoryRepository.save(category);
-        return this.mapper.mapOutCategoryToCategoryResponse(category);
+        return this.categoryRepository.findById(categoryId)
+                .flatMap(category -> {
+                    category.setName(categoryRequest.getName());
+                    return this.categoryRepository.save(category);
+                })
+                .map(this.mapper::mapOutCategoryToCategoryResponse);
     }
 
-    public void delete(Long categoryId) {
+    public Mono<Void> delete(Long categoryId) {
         log.info("Invoking CategoryService.delete method");
-        this.categoryRepository.deleteById(categoryId);
+        return Mono.fromRunnable(() -> this.categoryRepository.deleteById(categoryId));
     }
 
 }

@@ -46,16 +46,14 @@ public class ConsumptionService {
         return this.userManager.findUser(userId, token)
                 .flatMap(userResponse -> {
                     consumption.setUserId(userResponse.getUserId());
-                    return Mono.just(consumption);
+                    return this.nourishmentManager.findNourishment(nourishmentId, token);
                 })
-                .flatMap(c -> this.nourishmentManager.findNourishment(nourishmentId, token)
-                        .flatMap(nourishmentResponse -> {
-                            c.setNourishmentId(nourishmentResponse.getNourishmentId());
-                            NourishmentRequest nourishmentRequest = ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
-                            this.nourishmentManager.updateNourishment(nourishmentRequest, nourishmentResponse, token).subscribe();
-                            return Mono.just(c);
-                        }))
-                .flatMap(this.consumptionRepository::save)
+                .flatMap(nourishmentResponse -> {
+                    consumption.setNourishmentId(nourishmentResponse.getNourishmentId());
+                    NourishmentRequest nourishmentRequest = ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
+                    return this.nourishmentManager.updateNourishment(nourishmentRequest, nourishmentResponse, token);
+                })
+                .then(this.consumptionRepository.save(consumption))
                 .map(this.mapper::mapOutConsumptionToConsumptionResponse);
     }
 
