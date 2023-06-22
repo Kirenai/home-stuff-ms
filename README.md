@@ -9,3 +9,4 @@
 - eureka-server
 - auth
 - api-gateway
+- config-server
