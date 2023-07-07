@@ -2,6 +2,7 @@ package me.kirenai.re.nourishment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.exception.nourishment.NourishmentNotFoundException;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
@@ -37,6 +38,8 @@ public class NourishmentService {
     public Mono<NourishmentResponse> findOne(Long nourishmentId) {
         log.info("Invoking NourishmentService.findOne method");
         return this.nourishmentRepository.findById(nourishmentId)
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                        String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
@@ -71,6 +74,8 @@ public class NourishmentService {
     public Mono<NourishmentResponse> update(Long nourishmentId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.update method");
         return this.nourishmentRepository.findById(nourishmentId)
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                        String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
                 .flatMap(nourishment -> {
                     nourishment.setName(nourishmentRequest.getName());
                     nourishment.setDescription(nourishmentRequest.getDescription());
@@ -90,7 +95,11 @@ public class NourishmentService {
 
     public Mono<Void> delete(Long nourishmentId) {
         log.info("Invoking NourishmentService.delete method");
-        return Mono.fromRunnable(() -> this.nourishmentRepository.deleteById(nourishmentId));
+        return this.nourishmentRepository
+                .findById(nourishmentId)
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                        String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
+                .flatMap(this.nourishmentRepository::delete);
     }
 
 }

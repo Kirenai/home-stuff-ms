@@ -1,5 +1,6 @@
 package me.kirenai.re.role.service;
 
+import me.kirenai.re.exception.role.RoleNotFoundException;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.mapper.RoleMapper;
 import me.kirenai.re.role.repository.RoleRepository;
@@ -15,11 +16,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -75,6 +71,22 @@ class RoleServiceTest {
 
         verify(this.roleRepository, times(1)).findById(anyLong());
         verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
+    }
+
+    @Test
+    @DisplayName("Should throw a role not found exception when GET")
+    void shouldThrowRoleNotFoundExceptionWhenGET_Test() {
+        when(this.roleRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+
+        Mono<RoleResponse> response = this.roleService.findOne(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(RoleNotFoundException.class)
+                .verify();
+
+        verify(this.roleRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -137,6 +149,22 @@ class RoleServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw a role not found exception when POST RoleUser")
+    void shouldThrowRoleNotFoundExceptionWhenPOSTRoleUser_Test() {
+        when(this.roleRepository.findByName(anyString()))
+                .thenReturn(Mono.empty());
+
+        Mono<Void> response = this.roleService.createRoleUser(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(RoleNotFoundException.class)
+                .verify();
+
+        verify(this.roleRepository, times(1)).findByName(anyString());
+    }
+
+    @Test
     @DisplayName("Should update a role")
     void shouldUpdateRoleTest() {
         RoleResponse roleResponse = RoleMocks.getRoleResponse();
@@ -155,6 +183,21 @@ class RoleServiceTest {
         verify(this.roleRepository, times(1)).findById(anyLong());
         verify(this.roleRepository, times(1)).save(any());
         verify(this.roleMapper, times(1)).mapOutRoleToRoleResponse(any());
+    }
+
+    @Test
+    @DisplayName("Should throw a role not found exception when PUT")
+    void shouldThrowRoleNotFoundExceptionWhenPUT_Test() {
+        when(this.roleRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<RoleResponse> response = this.roleService.update(1L, RoleMocks.getRoleRequest());
+
+        StepVerifier
+                .create(response)
+                .expectError(RoleNotFoundException.class)
+                .verify();
+
+        verify(this.roleRepository, times(1)).findById(anyLong());
     }
 
 }

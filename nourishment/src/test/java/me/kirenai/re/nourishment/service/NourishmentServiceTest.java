@@ -1,5 +1,6 @@
 package me.kirenai.re.nourishment.service;
 
+import me.kirenai.re.exception.nourishment.NourishmentNotFoundException;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
@@ -105,6 +106,22 @@ class NourishmentServiceTest {
         verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
     }
 
+    @Test
+    @DisplayName("Should throw an nourishment not found exception when GET")
+    void findOneThrowExceptionGETTest() {
+        when(this.nourishmentRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+
+        Mono<NourishmentResponse> response = nourishmentService.findOne(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(NourishmentNotFoundException.class)
+                .verify();
+
+        verify(this.nourishmentRepository, times(1)).findById(anyLong());
+    }
+
 
     @Test
     @DisplayName("Should find all nourishments by status when find all by is available when isAvailable is true")
@@ -205,13 +222,44 @@ class NourishmentServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw a nourishment not found exception when PUT")
+    void updateThrowExceptionPUTTest() {
+        when(this.nourishmentRepository.findById(anyLong()))
+                .thenReturn(Mono.empty());
+
+        Mono<NourishmentResponse> response = this.nourishmentService.update(1L, NourishmentMocks.getNourishmentRequest());
+
+        StepVerifier
+                .create(response)
+                .expectError(NourishmentNotFoundException.class)
+                .verify();
+
+        verify(this.nourishmentRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     @DisplayName("Should delete a nourishment")
     void deleteTest() {
+        when(this.nourishmentRepository.findById(anyLong())).thenReturn(Mono.just(NourishmentMocks.getNourishment()));
+        when(this.nourishmentRepository.delete(any())).thenReturn(Mono.empty());
+
+        Mono<Void> response = this.nourishmentService.delete(1L);
+
+        StepVerifier
+                .create(response.log())
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("Should return an nourishment not found exception when DELETE")
+    void shouldDeleteTest() {
+        when(this.nourishmentRepository.findById(anyLong())).thenReturn(Mono.empty());
+
         Mono<Void> response = this.nourishmentService.delete(1L);
 
         StepVerifier
                 .create(response)
-                .verifyComplete();
+                .expectError(NourishmentNotFoundException.class)
+                .verify();
     }
-
 }

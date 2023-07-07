@@ -2,6 +2,7 @@ package me.kirenai.re.role.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.exception.role.RoleNotFoundException;
 import me.kirenai.re.role.dto.RoleRequest;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.entity.Role;
@@ -9,12 +10,9 @@ import me.kirenai.re.role.entity.RoleUser;
 import me.kirenai.re.role.mapper.RoleMapper;
 import me.kirenai.re.role.repository.RoleRepository;
 import me.kirenai.re.role.repository.RoleUserRepository;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -39,13 +37,13 @@ public class RoleService {
     public Mono<RoleResponse> findOne(Long roleId) {
         log.info("Invoking RoleService.findOne method");
         return this.roleRepository.findById(roleId)
+                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found with id: %s", roleId))))
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
 
     public Flux<RoleResponse> findAllByUserId(Long userId) {
         log.info("Invoking RoleService.findAllByUserId method");
         return this.roleUserRepository.findByUserId(userId)
-                .switchIfEmpty(Mono.error(new IllegalStateException("Role not found")))
                 .flatMap(roleUser -> Flux.fromIterable(roleUser.getRoles()))
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
@@ -60,6 +58,7 @@ public class RoleService {
     public Mono<Void> createRoleUser(Long userId) {
         log.info("Invoking RoleService.createRoleUser method");
         return this.roleRepository.findByName(DEFAULT_ROLE)
+                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found by name: %s", DEFAULT_ROLE))))
                 .flatMap(role -> {
                     RoleUser roleUser = RoleUser.builder()
                             .roleId(role.getRoleId())
@@ -72,7 +71,7 @@ public class RoleService {
     public Mono<RoleResponse> update(Long roleId, RoleRequest roleRequest) {
         log.info("Invoking RoleService.update method");
         return this.roleRepository.findById(roleId)
-                .switchIfEmpty(Mono.error(new IllegalStateException("Role not found")))
+                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found by role id: %s", roleId))))
                 .flatMap(role -> {
                     role.setName(roleRequest.getName());
                     return this.roleRepository.save(role);

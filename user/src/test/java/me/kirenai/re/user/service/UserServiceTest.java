@@ -1,5 +1,6 @@
 package me.kirenai.re.user.service;
 
+import me.kirenai.re.exception.user.UserNotFoundException;
 import me.kirenai.re.user.api.RoleManager;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
@@ -12,17 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -83,6 +77,20 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should return an user not found exception when GET")
+    void shouldReturnUserNotFoundExceptionWhenGETTest() {
+        when(this.userRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<UserResponse> response = userService.findOne(1L);
+
+        StepVerifier.create(response)
+                .expectError(UserNotFoundException.class)
+                .verify();
+
+        verify(this.userRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     @DisplayName("Should create an user")
     void shouldCreateUser() {
         UserResponse userResponse = UserMocks.getUserResponse();
@@ -123,12 +131,41 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should return an user not found exception when PUT")
+    void shouldReturnUserNotFoundExceptionWhenPUTTest() {
+
+        when(this.userRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<UserResponse> response = this.userService.update(2L, new UserRequest());
+
+        StepVerifier.create(response)
+                .expectError(UserNotFoundException.class)
+                .verify();
+
+        verify(this.userRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     @DisplayName("Should delete an user")
     void shouldDeleteUserTest() {
+        when(this.userRepository.findById(anyLong())).thenReturn(Mono.just(UserMocks.getUser()));
+
         Mono<Void> response = this.userService.delete(1L);
 
         StepVerifier.create(response.log())
                 .expectComplete();
+    }
+
+    @Test
+    @DisplayName("Should return an user not found exception when DELETE")
+    void shouldReturnUserNotFoundExceptionWhenDELETE() {
+        when(this.userRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<Void> response = this.userService.delete(1L);
+
+        StepVerifier.create(response)
+                .expectError(UserNotFoundException.class)
+                .verify();
     }
 
 }
