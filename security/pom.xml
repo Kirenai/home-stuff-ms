@@ -8,7 +8,7 @@
         <artifactId>home-stuff-ms</artifactId>
         <version>1.0</version>
     </parent>
-
+    <packaging>jar</packaging>
     <artifactId>security</artifactId>
 
     <properties>
