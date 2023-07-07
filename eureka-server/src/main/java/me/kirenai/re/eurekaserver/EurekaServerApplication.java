@@ -1,4 +1,4 @@
-package me.kirenaia.re.eurekaserver;
+package me.kirenai.re.eurekaserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
