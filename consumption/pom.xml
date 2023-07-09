@@ -11,14 +11,19 @@
     <packaging>jar</packaging>
     <artifactId>consumption</artifactId>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -48,6 +53,7 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -56,7 +62,7 @@
         <dependency>
             <groupId>me.kirenai.re</groupId>
             <artifactId>security</artifactId>
-            <version>1.0</version>
+            <version>${me.kirenai.re.security.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
