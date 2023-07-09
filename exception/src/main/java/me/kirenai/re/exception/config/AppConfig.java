@@ -1,11 +1,11 @@
-package me.kirenai.re.exception;
+package me.kirenai.re.exception.config;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
-public class ExceptionApplication {
+@Configuration
+public class AppConfig {
 
     @Bean
     public WebProperties.Resources resources() {

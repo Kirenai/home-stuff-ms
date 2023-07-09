@@ -1,12 +1,17 @@
 package me.kirenai.re.consumption;
 
-import me.kirenai.re.security.SecurityApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
-@Import(value = {SecurityApplication.class})
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+        "me.kirenai.re.consumption",
+        "me.kirenai.re.security",
+})
+@PropertySources({
+        @PropertySource("classpath:security-default.properties")
+})
 public class ConsumptionApplication {
 
     public static void main(String[] args) {

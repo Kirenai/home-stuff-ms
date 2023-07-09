@@ -1,13 +1,18 @@
 package me.kirenai.re.user;
 
-import me.kirenai.re.exception.ExceptionApplication;
-import me.kirenai.re.security.SecurityApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
-@Import(value = {SecurityApplication.class, ExceptionApplication.class})
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+        "me.kirenai.re.user",
+        "me.kirenai.re.security",
+        "me.kirenai.re.exception",
+})
+@PropertySources({
+        @PropertySource("classpath:security-default.properties")
+})
 public class UserApplication {
 
     public static void main(String[] args) {
