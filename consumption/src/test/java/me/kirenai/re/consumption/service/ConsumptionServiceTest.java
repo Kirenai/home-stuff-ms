@@ -9,6 +9,7 @@ import me.kirenai.re.consumption.repository.ConsumptionRepository;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
 import me.kirenai.re.consumption.util.NourishmentMocks;
 import me.kirenai.re.consumption.util.UserMocks;
+import me.kirenai.re.exception.consumption.ConsumptionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +72,21 @@ class ConsumptionServiceTest {
 
         verify(this.consumptionRepository, times(1)).findById(anyLong());
         verify(this.mapper, times(1)).mapOutConsumptionToConsumptionResponse(any());
+    }
+
+    @Test
+    @DisplayName("Should throw a consumption not found exception when GET")
+    void shouldThrowConsumptionNotFoundExceptionWhenGET_Test() {
+        when(this.consumptionRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<ConsumptionResponse> response = consumptionService.findOne(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(ConsumptionNotFoundException.class)
+                .verify();
+
+        verify(this.consumptionRepository, times(1)).findById(anyLong());
     }
 
     @Test

@@ -11,6 +11,7 @@ import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
 import me.kirenai.re.consumption.repository.ConsumptionRepository;
 import me.kirenai.re.consumption.util.ConsumptionProcess;
+import me.kirenai.re.exception.consumption.ConsumptionNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +37,8 @@ public class ConsumptionService {
     public Mono<ConsumptionResponse> findOne(Long consumptionId) {
         log.info("Invoking ConsumptionService.findOne method");
         return this.consumptionRepository.findById(consumptionId)
+                .switchIfEmpty(Mono.error(new ConsumptionNotFoundException(
+                        String.format("Consumption not found with consumptionId: %s", consumptionId))))
                 .map(this.mapper::mapOutConsumptionToConsumptionResponse);
     }
 
@@ -50,7 +53,8 @@ public class ConsumptionService {
                 })
                 .flatMap(nourishmentResponse -> {
                     consumption.setNourishmentId(nourishmentResponse.getNourishmentId());
-                    NourishmentRequest nourishmentRequest = ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
+                    NourishmentRequest nourishmentRequest =
+                            ConsumptionProcess.process(consumption, nourishmentResponse, this.mapper);
                     return this.nourishmentManager.updateNourishment(nourishmentRequest, nourishmentResponse, token);
                 })
                 .then(this.consumptionRepository.save(consumption))
