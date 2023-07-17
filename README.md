@@ -5,8 +5,11 @@
 - consumption
 - category
 - role
-- security
 - eureka-server
 - auth
 - api-gateway
 - config-server
+
+## Internal Packages
+- security
+- exception
