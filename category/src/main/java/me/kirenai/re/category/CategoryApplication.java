@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 @SpringBootApplication(scanBasePackages = {
         "me.kirenai.re.category",
         "me.kirenai.re.security",
+        "me.kirenai.re.exception",
 })
 @PropertySources({
         @PropertySource("classpath:security-default.properties")

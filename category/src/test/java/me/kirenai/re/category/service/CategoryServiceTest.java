@@ -4,6 +4,7 @@ import me.kirenai.re.category.dto.CategoryResponse;
 import me.kirenai.re.category.mapper.CategoryMapper;
 import me.kirenai.re.category.mock.CategoryMocks;
 import me.kirenai.re.category.repository.CategoryRepository;
+import me.kirenai.re.exception.category.CategoryNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +66,21 @@ class CategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw category not found exception when GET")
+    void shouldThrowCategoryNotFoundExceptionWhen_GET() {
+        when(this.categoryRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<CategoryResponse> response = this.categoryService.findOne(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(CategoryNotFoundException.class)
+                .verify();
+
+        verify(this.categoryRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     @DisplayName("Should create a category")
     void createTest() {
         CategoryResponse categoryResponse = CategoryMocks.getCategoryResponse();
@@ -105,15 +121,49 @@ class CategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw a category not found exception when PUT")
+    void shouldThrowCategoryNotFoundExceptionWhen_PUT() {
+        when(this.categoryRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<CategoryResponse> response = this.categoryService.update(1L, CategoryMocks.getCategoryRequest());
+
+        StepVerifier
+                .create(response)
+                .expectError(CategoryNotFoundException.class)
+                .verify();
+
+        verify(this.categoryRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     @DisplayName("Should delete a category")
     void deleteTest() {
+        when(this.categoryRepository.findById(anyLong())).thenReturn(Mono.just(CategoryMocks.getCategory()));
+        when(this.categoryRepository.delete(any())).thenReturn(Mono.empty());
+
         Mono<Void> response = this.categoryService.delete(1L);
 
         StepVerifier
                 .create(response)
                 .verifyComplete();
 
-        verify(this.categoryRepository, times(1)).deleteById(anyLong());
+        verify(this.categoryRepository, times(1)).findById(anyLong());
+        verify(this.categoryRepository, times(1)).delete(any());
+    }
+
+    @Test
+    @DisplayName("Should throw category not found exception when DELETE")
+    void shouldThrowCategoryNotFoundExceptionWhen_DELETE() {
+        when(this.categoryRepository.findById(anyLong())).thenReturn(Mono.empty());
+
+        Mono<Void> response = this.categoryService.delete(1L);
+
+        StepVerifier
+                .create(response)
+                .expectError(CategoryNotFoundException.class)
+                .verify();
+
+        verify(this.categoryRepository, times(1)).findById(anyLong());
     }
 
 }
