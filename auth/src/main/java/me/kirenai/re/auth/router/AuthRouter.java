@@ -16,6 +16,7 @@ public class AuthRouter {
     public RouterFunction<ServerResponse> route(AuthHandler handler) {
         return RouterFunctions.route()
                 .POST(PATH + "/login", handler::login)
+                .POST(PATH + "/register", handler::register)
                 .build();
     }
 }

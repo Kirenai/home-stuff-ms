@@ -1,6 +1,7 @@
 package me.kirenai.re.auth.router;
 
 import me.kirenai.re.auth.dto.LoginRequest;
+import me.kirenai.re.auth.dto.RegisterRequest;
 import me.kirenai.re.auth.handler.AuthHandler;
 import me.kirenai.re.auth.service.AuthService;
 import me.kirenai.re.auth.util.AuthMocks;
@@ -22,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +58,22 @@ class AuthRouterTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(AuthMocks.getLoginRequest()), LoginRequest.class)
                 .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    public void registerTest() throws IOException {
+        when(this.authService.register(any())).thenReturn(Mono.just(AuthMocks.getUserResponse()));
+
+        this.webTestClient.mutateWith(SecurityMockServerConfigurers.csrf())
+                .post()
+                .uri(URL.append("/register").toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(AuthMocks.getRegisterRequest()), RegisterRequest.class)
+                .exchange()
                 .expectStatus().isCreated();
+
     }
 
 }

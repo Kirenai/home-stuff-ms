@@ -1,11 +1,18 @@
 package me.kirenai.re.auth.util;
 
-import me.kirenai.re.auth.dto.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kirenai.re.auth.dto.LoginRequest;
 import me.kirenai.re.auth.dto.RegisterRequest;
 import me.kirenai.re.auth.dto.UserResponse;
 
+import java.io.IOException;
+
 public class AuthMocks {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private AuthMocks() {
+    }
 
     public static LoginRequest getLoginRequest() {
         return LoginRequest.builder()
@@ -24,9 +31,8 @@ public class AuthMocks {
                 .build();
     }
 
-    public static ApiResponse<UserResponse> getApiResponse() {
-        return ApiResponse.<UserResponse>builder()
-                .response(UserResponse.builder().userId(1L).username("username").firstName("firstname").lastName("lastname").age(18).build())
-                .build();
+    public static UserResponse getUserResponse() throws IOException {
+        return objectMapper.readValue(Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("mock/user/UserResponse.json"), UserResponse.class);
     }
 }

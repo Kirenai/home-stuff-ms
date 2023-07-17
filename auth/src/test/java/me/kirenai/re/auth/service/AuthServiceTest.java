@@ -1,8 +1,9 @@
 package me.kirenai.re.auth.service;
 
-import me.kirenai.re.auth.dto.ApiResponse;
+import me.kirenai.re.auth.api.UserManager;
 import me.kirenai.re.auth.dto.LoginRequest;
 import me.kirenai.re.auth.dto.RegisterRequest;
+import me.kirenai.re.auth.dto.UserResponse;
 import me.kirenai.re.auth.util.AuthMocks;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.security.service.AuthUserDetails;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,10 +20,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +35,8 @@ class AuthServiceTest {
     private ReactiveAuthenticationManager authenticationManager;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private UserManager userManager;
 
     @Test
     @DisplayName("Should login")
@@ -53,15 +55,19 @@ class AuthServiceTest {
         verify(this.authenticationManager, timeout(1)).authenticate(any());
     }
 
-//    @Test
-//    @DisplayName("Should register")
-//    public void registerTest() {
-//        when(this.restTemplate.exchange(anyString(), any(), any(), eq(ApiResponse.class)))
-//                .thenReturn(ResponseEntity.ok(AuthMocks.getApiResponse()));
-//        this.authService.register(new RegisterRequest());
-//        verify(this.jwtTokenProvider, timeout(1)).generateInternalJwtToken();
-//        verify(this.jwtTokenProvider, timeout(1)).getTokenPrefix();
-//        verify(this.restTemplate, timeout(1)).exchange(anyString(), any(), any(), eq(ApiResponse.class));
-//    }
+    @Test
+    @DisplayName("Should register")
+    public void registerTest() throws IOException {
+        UserResponse userResponse = AuthMocks.getUserResponse();
+        when(this.userManager.createUser(any())).thenReturn(Mono.just(userResponse));
+
+        Mono<UserResponse> response = this.authService.register(new RegisterRequest());
+
+        StepVerifier.create(response)
+                .expectNext(userResponse)
+                .verifyComplete();
+
+        verify(this.userManager, timeout(1)).createUser(any());
+    }
 
 }
