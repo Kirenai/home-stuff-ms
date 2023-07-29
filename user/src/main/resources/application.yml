@@ -1,5 +1,7 @@
 spring:
   application:
     name: user
+  profiles:
+    active: dev
   config:
     import: optional:configserver:${CONFIG-SERVER-URL:http://localhost:8888}

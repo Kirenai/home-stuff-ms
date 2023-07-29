@@ -6,7 +6,7 @@ spring:
     config:
       server:
         git:
-          uri: file:///E:/workspace/Java/home-stuff-ms-config-server
+          uri: file:///D:/workspace/Java/home-stuff-ms-config-server
 
 eureka:
   client:
