@@ -16,7 +16,7 @@ public class NourishmentNotFoundException extends EntityNotFoundException {
     }
 
     @Override
-    public EntityErrorMessage error(ServerRequest request, EntityNotFoundException exception) {
+    public EntityErrorMessage createError(ServerRequest request, EntityNotFoundException exception) {
         return UserErrorMessage.builder()
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())

@@ -15,7 +15,7 @@ public class RoleNotFoundException extends EntityNotFoundException {
     }
 
     @Override
-    public EntityErrorMessage error(ServerRequest request, EntityNotFoundException exception) {
+    public EntityErrorMessage createError(ServerRequest request, EntityNotFoundException exception) {
         return RoleErrorMessage.builder()
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())

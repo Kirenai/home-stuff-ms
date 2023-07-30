@@ -19,7 +19,7 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
         Throwable throwable = super.getError(request);
 
         if (throwable instanceof EntityNotFoundException exception) {
-            errorAttributes.put("error", exception.error(request, exception));
+            errorAttributes.put("error", exception.createError(request, exception));
             errorAttributes.put("status", HttpStatus.NOT_FOUND);
         }
 

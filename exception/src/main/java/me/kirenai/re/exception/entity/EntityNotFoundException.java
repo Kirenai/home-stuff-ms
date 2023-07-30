@@ -8,6 +8,6 @@ public abstract class EntityNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public abstract EntityErrorMessage error(ServerRequest request, EntityNotFoundException exception);
+    public abstract EntityErrorMessage createError(ServerRequest request, EntityNotFoundException exception);
 
 }
