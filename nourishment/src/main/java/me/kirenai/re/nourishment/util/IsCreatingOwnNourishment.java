@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-@PreAuthorize("@isOwnToken.apply(#userId, principal)")
-public @interface IsOwnToken {
+@PreAuthorize("@isCreatingOwnNourishment.apply(#userId, principal)")
+public @interface IsCreatingOwnNourishment {
 }

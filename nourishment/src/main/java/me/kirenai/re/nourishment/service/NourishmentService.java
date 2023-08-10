@@ -11,7 +11,7 @@ import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
 import me.kirenai.re.nourishment.util.IsAuthorized;
-import me.kirenai.re.nourishment.util.IsOwnToken;
+import me.kirenai.re.nourishment.util.IsCreatingOwnNourishment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +62,8 @@ public class NourishmentService {
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
-    @IsOwnToken
     @Transactional
+    @IsCreatingOwnNourishment
     public Mono<NourishmentResponse> create(Long userId, Long categoryId, NourishmentRequest nourishmentRequest, String token) {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
@@ -80,8 +80,8 @@ public class NourishmentService {
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
-    @IsAuthorized
     @Transactional
+    @IsAuthorized
     public Mono<NourishmentResponse> update(Long nourishmentId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.update method");
         return this.nourishmentRepository.findById(nourishmentId)
