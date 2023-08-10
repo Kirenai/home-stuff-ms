@@ -1,5 +1,6 @@
 package me.kirenai.re.nourishment.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +21,7 @@ public class NourishmentResponse {
     private Boolean isAvailable;
     private Integer unit;
     private Integer percentage;
+    @JsonIgnore
+    private Long userId;
 
 }

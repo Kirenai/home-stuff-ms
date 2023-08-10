@@ -10,7 +10,11 @@ import me.kirenai.re.nourishment.dto.NourishmentResponse;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
+import me.kirenai.re.nourishment.util.IsAuthorized;
+import me.kirenai.re.nourishment.util.IsOwnToken;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,6 +39,7 @@ public class NourishmentService {
 //                .toList();
 //    }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<NourishmentResponse> findOne(Long nourishmentId) {
         log.info("Invoking NourishmentService.findOne method");
         return this.nourishmentRepository.findById(nourishmentId)
@@ -43,18 +48,22 @@ public class NourishmentService {
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Flux<NourishmentResponse> findAllByUserId(Long userId) {
         log.info("Invoking NourishmentService.findNourishmentsByUserId method");
         return this.nourishmentRepository.findByUserId(userId)
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Flux<NourishmentResponse> findAllByIsAvailable(Boolean isAvailable) {
         log.info("Invoking NourishmentService.findAllNourishmentByStatus method");
         return this.nourishmentRepository.findByIsAvailable(isAvailable)
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
+    @IsOwnToken
+    @Transactional
     public Mono<NourishmentResponse> create(Long userId, Long categoryId, NourishmentRequest nourishmentRequest, String token) {
         log.info("Invoking NourishmentService.create method");
         Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
@@ -71,6 +80,8 @@ public class NourishmentService {
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
+    @IsAuthorized
+    @Transactional
     public Mono<NourishmentResponse> update(Long nourishmentId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.update method");
         return this.nourishmentRepository.findById(nourishmentId)
@@ -93,6 +104,7 @@ public class NourishmentService {
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
 
+    @IsAuthorized
     public Mono<Void> delete(Long nourishmentId) {
         log.info("Invoking NourishmentService.delete method");
         return this.nourishmentRepository

@@ -9,6 +9,7 @@ import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.entity.User;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleManager roleManager;
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<UserResponse> findOne(Long id) {
         log.info("Invoking UserService.findOne method");
         return this.userRepository.findById(id)
@@ -51,6 +53,7 @@ public class UserService {
                 .map(this.userMapper::mapOutUserToUserResponse);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<UserResponse> update(Long id, UserRequest userRequest) {
         log.info("Invoking UserService.update method");
         return this.userRepository.findById(id)
@@ -65,6 +68,7 @@ public class UserService {
                 .map(this.userMapper::mapOutUserToUserResponse);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<Void> delete(Long id) {
         log.info("Invoking UserService.delete method");
         return this.userRepository
