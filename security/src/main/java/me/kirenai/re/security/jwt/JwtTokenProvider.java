@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.security.service.AuthUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -48,6 +49,7 @@ public class JwtTokenProvider {
 
     public String generateJwtToken(Authentication authentication) {
         return Jwts.builder()
+                .setId(((AuthUserDetails) authentication.getPrincipal()).getUserId().toString())
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES, authentication.getAuthorities())
                 .setIssuedAt(new Date())

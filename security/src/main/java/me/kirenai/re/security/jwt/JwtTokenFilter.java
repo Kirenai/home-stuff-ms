@@ -11,6 +11,9 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,8 +27,12 @@ public class JwtTokenFilter implements WebFilter {
         String token = this.jwtTokenProvider.getJwtTokenFromRequest(exchange.getRequest());
         if (this.jwtTokenProvider.validateJwtToken(token)) {
             Claims claims = this.jwtTokenProvider.getJwtBody(token);
+            Map<String, Object> principal = new HashMap<>();
+            principal.put("userId", claims.getId());
+            principal.put("username", claims.getSubject());
+            principal.put("authorities", this.jwtTokenProvider.getJwtGrantedAuthorities(token));
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(),
+                    principal,
                     null,
                     this.jwtTokenProvider.getJwtGrantedAuthorities(token)
             );
