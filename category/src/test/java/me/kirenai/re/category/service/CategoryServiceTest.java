@@ -4,7 +4,7 @@ import me.kirenai.re.category.dto.CategoryResponse;
 import me.kirenai.re.category.mapper.CategoryMapper;
 import me.kirenai.re.category.mock.CategoryMocks;
 import me.kirenai.re.category.repository.CategoryRepository;
-import me.kirenai.re.exception.category.CategoryNotFoundException;
+import me.kirenai.re.exception.category.CategoryNotFoundExceptionFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +74,7 @@ class CategoryServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(CategoryNotFoundException.class)
+                .expectError(CategoryNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.categoryRepository, times(1)).findById(anyLong());
@@ -129,7 +129,7 @@ class CategoryServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(CategoryNotFoundException.class)
+                .expectError(CategoryNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.categoryRepository, times(1)).findById(anyLong());
@@ -160,7 +160,7 @@ class CategoryServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(CategoryNotFoundException.class)
+                .expectError(CategoryNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.categoryRepository, times(1)).findById(anyLong());

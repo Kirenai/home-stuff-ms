@@ -1,6 +1,6 @@
 package me.kirenai.re.nourishment.service;
 
-import me.kirenai.re.exception.nourishment.NourishmentNotFoundException;
+import me.kirenai.re.exception.nourishment.NourishmentNotFoundExceptionFactory;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
@@ -116,7 +116,7 @@ class NourishmentServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(NourishmentNotFoundException.class)
+                .expectError(NourishmentNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.nourishmentRepository, times(1)).findById(anyLong());
@@ -231,7 +231,7 @@ class NourishmentServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(NourishmentNotFoundException.class)
+                .expectError(NourishmentNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.nourishmentRepository, times(1)).findById(anyLong());
@@ -259,7 +259,7 @@ class NourishmentServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(NourishmentNotFoundException.class)
+                .expectError(NourishmentNotFoundExceptionFactory.class)
                 .verify();
     }
 }

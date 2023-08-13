@@ -2,7 +2,7 @@ package me.kirenai.re.nourishment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.exception.nourishment.NourishmentNotFoundException;
+import me.kirenai.re.exception.nourishment.NourishmentNotFoundExceptionFactory;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
@@ -43,7 +43,7 @@ public class NourishmentService {
     public Mono<NourishmentResponse> findOne(Long nourishmentId) {
         log.info("Invoking NourishmentService.findOne method");
         return this.nourishmentRepository.findById(nourishmentId)
-                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundExceptionFactory(
                         String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
                 .map(this.mapper::mapOutNourishmentToNourishmentResponse);
     }
@@ -85,7 +85,7 @@ public class NourishmentService {
     public Mono<NourishmentResponse> update(Long nourishmentId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.update method");
         return this.nourishmentRepository.findById(nourishmentId)
-                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundExceptionFactory(
                         String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
                 .flatMap(nourishment -> {
                     nourishment.setName(nourishmentRequest.getName());
@@ -109,7 +109,7 @@ public class NourishmentService {
         log.info("Invoking NourishmentService.delete method");
         return this.nourishmentRepository
                 .findById(nourishmentId)
-                .switchIfEmpty(Mono.error(new NourishmentNotFoundException(
+                .switchIfEmpty(Mono.error(new NourishmentNotFoundExceptionFactory(
                         String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
                 .flatMap(this.nourishmentRepository::delete);
     }

@@ -1,6 +1,6 @@
 package me.kirenai.re.user.service;
 
-import me.kirenai.re.exception.user.UserNotFoundException;
+import me.kirenai.re.exception.user.UserNotFoundExceptionFactory;
 import me.kirenai.re.user.api.RoleManager;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
@@ -84,7 +84,7 @@ class UserServiceTest {
         Mono<UserResponse> response = userService.findOne(1L);
 
         StepVerifier.create(response)
-                .expectError(UserNotFoundException.class)
+                .expectError(UserNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.userRepository, times(1)).findById(anyLong());
@@ -139,7 +139,7 @@ class UserServiceTest {
         Mono<UserResponse> response = this.userService.update(2L, new UserRequest());
 
         StepVerifier.create(response)
-                .expectError(UserNotFoundException.class)
+                .expectError(UserNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.userRepository, times(1)).findById(anyLong());
@@ -164,7 +164,7 @@ class UserServiceTest {
         Mono<Void> response = this.userService.delete(1L);
 
         StepVerifier.create(response)
-                .expectError(UserNotFoundException.class)
+                .expectError(UserNotFoundExceptionFactory.class)
                 .verify();
     }
 

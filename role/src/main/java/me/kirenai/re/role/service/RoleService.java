@@ -2,7 +2,7 @@ package me.kirenai.re.role.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.exception.role.RoleNotFoundException;
+import me.kirenai.re.exception.role.RoleNotFoundExceptionFactory;
 import me.kirenai.re.role.dto.RoleRequest;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.entity.Role;
@@ -39,7 +39,7 @@ public class RoleService {
     public Mono<RoleResponse> findOne(Long roleId) {
         log.info("Invoking RoleService.findOne method");
         return this.roleRepository.findById(roleId)
-                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found with id: %s", roleId))))
+                .switchIfEmpty(Mono.error(new RoleNotFoundExceptionFactory(String.format("Role not found with id: %s", roleId))))
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
 
@@ -63,7 +63,7 @@ public class RoleService {
     public Mono<Void> createRoleUser(Long userId) {
         log.info("Invoking RoleService.createRoleUser method");
         return this.roleRepository.findByName(DEFAULT_ROLE)
-                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found by name: %s", DEFAULT_ROLE))))
+                .switchIfEmpty(Mono.error(new RoleNotFoundExceptionFactory(String.format("Role not found by name: %s", DEFAULT_ROLE))))
                 .flatMap(role -> {
                     RoleUser roleUser = RoleUser.builder()
                             .roleId(role.getRoleId())
@@ -77,7 +77,7 @@ public class RoleService {
     public Mono<RoleResponse> update(Long roleId, RoleRequest roleRequest) {
         log.info("Invoking RoleService.update method");
         return this.roleRepository.findById(roleId)
-                .switchIfEmpty(Mono.error(new RoleNotFoundException(String.format("Role not found by role id: %s", roleId))))
+                .switchIfEmpty(Mono.error(new RoleNotFoundExceptionFactory(String.format("Role not found by role id: %s", roleId))))
                 .flatMap(role -> {
                     role.setName(roleRequest.getName());
                     return this.roleRepository.save(role);

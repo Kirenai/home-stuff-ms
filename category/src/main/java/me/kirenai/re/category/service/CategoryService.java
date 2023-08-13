@@ -7,7 +7,7 @@ import me.kirenai.re.category.dto.CategoryResponse;
 import me.kirenai.re.category.entity.Category;
 import me.kirenai.re.category.mapper.CategoryMapper;
 import me.kirenai.re.category.repository.CategoryRepository;
-import me.kirenai.re.exception.category.CategoryNotFoundException;
+import me.kirenai.re.exception.category.CategoryNotFoundExceptionFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -31,7 +31,7 @@ public class CategoryService {
     public Mono<CategoryResponse> findOne(Long categoryId) {
         log.info("Invoking CategoryService.findOne method");
         return this.categoryRepository.findById(categoryId)
-                .switchIfEmpty(Mono.error(new CategoryNotFoundException(
+                .switchIfEmpty(Mono.error(new CategoryNotFoundExceptionFactory(
                         String.format("Category not found with id: %d", categoryId))))
                 .map(this.mapper::mapOutCategoryToCategoryResponse);
     }
@@ -46,7 +46,7 @@ public class CategoryService {
     public Mono<CategoryResponse> update(Long categoryId, CategoryRequest categoryRequest) {
         log.info("Invoking CategoryService.update method");
         return this.categoryRepository.findById(categoryId)
-                .switchIfEmpty(Mono.error(new CategoryNotFoundException(
+                .switchIfEmpty(Mono.error(new CategoryNotFoundExceptionFactory(
                         String.format("Category not found with id: %d", categoryId))))
                 .flatMap(category -> {
                     category.setName(categoryRequest.getName());
@@ -58,7 +58,7 @@ public class CategoryService {
     public Mono<Void> delete(Long categoryId) {
         log.info("Invoking CategoryService.delete method");
         return this.categoryRepository.findById(categoryId)
-                .switchIfEmpty(Mono.error(new CategoryNotFoundException(
+                .switchIfEmpty(Mono.error(new CategoryNotFoundExceptionFactory(
                         String.format("Category not found with id: %d", categoryId))))
                 .flatMap(this.categoryRepository::delete);
     }

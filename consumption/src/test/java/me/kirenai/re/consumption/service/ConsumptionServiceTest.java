@@ -9,7 +9,7 @@ import me.kirenai.re.consumption.repository.ConsumptionRepository;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
 import me.kirenai.re.consumption.util.NourishmentMocks;
 import me.kirenai.re.consumption.util.UserMocks;
-import me.kirenai.re.exception.consumption.ConsumptionNotFoundException;
+import me.kirenai.re.exception.consumption.ConsumptionNotFoundExceptionFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +83,7 @@ class ConsumptionServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(ConsumptionNotFoundException.class)
+                .expectError(ConsumptionNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.consumptionRepository, times(1)).findById(anyLong());

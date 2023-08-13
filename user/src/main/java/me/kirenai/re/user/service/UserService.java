@@ -2,7 +2,7 @@ package me.kirenai.re.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.exception.user.UserNotFoundException;
+import me.kirenai.re.exception.user.UserNotFoundExceptionFactory;
 import me.kirenai.re.user.api.RoleManager;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
@@ -29,14 +29,14 @@ public class UserService {
     public Mono<UserResponse> findOne(Long id) {
         log.info("Invoking UserService.findOne method");
         return this.userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(String.format("User not found with id: %d", id))))
+                .switchIfEmpty(Mono.error(new UserNotFoundExceptionFactory(String.format("User not found with id: %d", id))))
                 .map(this.userMapper::mapOutUserToUserResponse);
     }
 
     public Mono<me.kirenai.re.security.dto.UserResponse> findByUsername(String username) {
         log.info("Invoking UserService.findByUsername method");
         return this.userRepository.findByUsername(username)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(String.format("User not found with username: %s", username))))
+                .switchIfEmpty(Mono.error(new UserNotFoundExceptionFactory(String.format("User not found with username: %s", username))))
                 .map(this.userMapper::mapOutUserToUserResponseSec);
     }
 
@@ -57,7 +57,7 @@ public class UserService {
     public Mono<UserResponse> update(Long id, UserRequest userRequest) {
         log.info("Invoking UserService.update method");
         return this.userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(String.format("User not found with id: %s", id))))
+                .switchIfEmpty(Mono.error(new UserNotFoundExceptionFactory(String.format("User not found with id: %s", id))))
                 .flatMap(user -> {
                     user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
                     user.setFirstName(userRequest.getFirstName());
@@ -73,7 +73,7 @@ public class UserService {
         log.info("Invoking UserService.delete method");
         return this.userRepository
                 .findById(id)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(String.format("User not found with id: %s", id))))
+                .switchIfEmpty(Mono.error(new UserNotFoundExceptionFactory(String.format("User not found with id: %s", id))))
                 .flatMap(this.userRepository::delete);
     }
 

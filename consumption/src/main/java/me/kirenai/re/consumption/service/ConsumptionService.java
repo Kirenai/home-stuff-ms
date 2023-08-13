@@ -11,7 +11,7 @@ import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
 import me.kirenai.re.consumption.repository.ConsumptionRepository;
 import me.kirenai.re.consumption.util.ConsumptionProcess;
-import me.kirenai.re.exception.consumption.ConsumptionNotFoundException;
+import me.kirenai.re.exception.consumption.ConsumptionNotFoundExceptionFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -37,7 +37,7 @@ public class ConsumptionService {
     public Mono<ConsumptionResponse> findOne(Long consumptionId) {
         log.info("Invoking ConsumptionService.findOne method");
         return this.consumptionRepository.findById(consumptionId)
-                .switchIfEmpty(Mono.error(new ConsumptionNotFoundException(
+                .switchIfEmpty(Mono.error(new ConsumptionNotFoundExceptionFactory(
                         String.format("Consumption not found with consumptionId: %s", consumptionId))))
                 .map(this.mapper::mapOutConsumptionToConsumptionResponse);
     }

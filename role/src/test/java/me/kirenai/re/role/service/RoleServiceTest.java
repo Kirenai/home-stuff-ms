@@ -1,6 +1,6 @@
 package me.kirenai.re.role.service;
 
-import me.kirenai.re.exception.role.RoleNotFoundException;
+import me.kirenai.re.exception.role.RoleNotFoundExceptionFactory;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.mapper.RoleMapper;
 import me.kirenai.re.role.repository.RoleRepository;
@@ -83,7 +83,7 @@ class RoleServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(RoleNotFoundException.class)
+                .expectError(RoleNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.roleRepository, times(1)).findById(anyLong());
@@ -158,7 +158,7 @@ class RoleServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(RoleNotFoundException.class)
+                .expectError(RoleNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.roleRepository, times(1)).findByName(anyString());
@@ -194,7 +194,7 @@ class RoleServiceTest {
 
         StepVerifier
                 .create(response)
-                .expectError(RoleNotFoundException.class)
+                .expectError(RoleNotFoundExceptionFactory.class)
                 .verify();
 
         verify(this.roleRepository, times(1)).findById(anyLong());
