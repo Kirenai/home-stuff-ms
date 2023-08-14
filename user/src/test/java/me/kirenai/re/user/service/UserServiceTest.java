@@ -6,6 +6,7 @@ import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
+import me.kirenai.re.user.repository.UserSortingRepository;
 import me.kirenai.re.user.util.UserMocks;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -34,29 +40,30 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private RoleManager roleManager;
+    @Mock
+    private UserSortingRepository userSortingRepository;
 
-//    @Test
-//    @DisplayName("Should find a list of users")
-//    void shouldFindUsersTest() {
-//        List<UserResponse> usersResponse = UserMocks.getUserResponseList();
-//
-//        Pageable pageableMock = mock(Pageable.class);
-//        when(this.userRepository.findAllBy(any(Pageable.class)))
-//                .thenReturn(UserMocks.getFluxUsers());
-//        when(this.userMapper.mapOutUserToUserResponse(any()))
-//                .thenReturn(usersResponse.get(0), usersResponse.get(1), usersResponse.get(2));
-//
-//        Flux<UserResponse> response = this.userService.findAll(pageableMock);
-//
-//        StepVerifier.create(response.log())
-//                .expectNext(usersResponse.get(0))
-//                .expectNext(usersResponse.get(1))
-//                .expectNext(usersResponse.get(2))
-//                .verifyComplete();
-//
-//        verify(this.userRepository, times(1)).findAllBy(any());
-//        verify(this.userMapper, times(3)).mapOutUserToUserResponse(any());
-//    }
+    @Test
+    @DisplayName("Should find a list of users")
+    void shouldFindUsersTest() {
+        List<UserResponse> userResponse = UserMocks.getUserResponseList();
+
+        when(this.userSortingRepository.findAllBy(any()))
+                .thenReturn(UserMocks.getFluxUsers());
+        when(this.userMapper.mapOutUserToUserResponse(any()))
+                .thenReturn(userResponse.get(0), userResponse.get(1), userResponse.get(2));
+
+        Flux<UserResponse> response = this.userService.findAll(PageRequest.of(1, 3, Sort.by(Sort.Direction.ASC, "userId")));
+
+        StepVerifier.create(response.log())
+                .expectNext(userResponse.get(0))
+                .expectNext(userResponse.get(1))
+                .expectNext(userResponse.get(2))
+                .verifyComplete();
+
+        verify(this.userSortingRepository, times(1)).findAllBy(any());
+        verify(this.userMapper, times(3)).mapOutUserToUserResponse(any());
+    }
 
     @Test
     @DisplayName("Should find a user")
@@ -107,6 +114,8 @@ class UserServiceTest {
                 .verifyComplete();
 
         verify(this.userMapper, times(1)).mapInUserRequestToUser(any());
+        verify(this.passwordEncoder, times(1)).encode(any());
+        verify(this.userRepository, times(1)).save(any());
         verify(this.roleManager, times(1)).createRoleUser(any(), anyString());
         verify(this.userMapper, times(1)).mapOutUserToUserResponse(any());
     }

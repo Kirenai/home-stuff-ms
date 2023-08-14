@@ -20,6 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -40,6 +41,23 @@ class UserRouterTest {
     private JwtTokenProvider jwtTokenProvider;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/users");
+
+    @Test
+    @DisplayName("Should get all users")
+    void shouldGetAllUsers() {
+        Flux<UserResponse> response = UserMocks.getFluxUserResponse();
+        when(this.userService.findAll(any())).thenReturn(response);
+
+        this.webTestClient
+                .get()
+                .uri(URL.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(UserResponse.class)
+                .hasSize(3);
+    }
 
     @Test
     @DisplayName("Should get user")

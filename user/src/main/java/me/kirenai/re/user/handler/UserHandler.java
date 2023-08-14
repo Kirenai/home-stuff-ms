@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.service.UserService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -23,6 +26,16 @@ public class UserHandler {
 
     private final UserService userService;
     private final Validator validator;
+
+    public Mono<ServerResponse> getAll(ServerRequest request) {
+        log.info("Invoking UserHandler.getAll method");
+        int page = Integer.parseInt(request.queryParam("page").orElse("0"));
+        int size = Integer.parseInt(request.queryParam("size").orElse("10"));
+        String[] sort = request.queryParam("sort").orElse("userId,ASC").split(",");
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(sort[1]), sort[0]));
+        Flux<UserResponse> response = this.userService.findAll(pageable);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(response, UserResponse.class);
+    }
 
     public Mono<ServerResponse> getOne(ServerRequest request) {
         log.info("Invoking UserHandler.getOne method");

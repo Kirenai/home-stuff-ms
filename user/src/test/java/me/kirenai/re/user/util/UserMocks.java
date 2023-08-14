@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserMocks {
+
     public static List<UserResponse> getUserResponseList() {
         return Arrays.asList(
                 getUserResponseMock(1L, "username1", "firstName1", "lastName1", 10),
@@ -88,6 +89,14 @@ public class UserMocks {
                 getUserMock(1L, "username1", "password1", "firstName1", "lastName1", 10),
                 getUserMock(2L, "username2", "password2", "firstName2", "lastName2", 15),
                 getUserMock(3L, "username3", "password3", "firstName3", "lastName3", 20)
+        );
+    }
+
+    public static Flux<UserResponse> getFluxUserResponse() {
+        return Flux.just(
+                getUserResponseMock(1L, "username1", "firstName1", "lastName1", 10),
+                getUserResponseMock(2L, "username2", "firstName2", "lastName2", 10),
+                getUserResponseMock(3L, "username3", "firstName3", "lastName3", 10)
         );
     }
 

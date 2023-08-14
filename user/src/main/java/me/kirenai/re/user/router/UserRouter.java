@@ -17,6 +17,7 @@ public class UserRouter {
     @Bean
     public RouterFunction<ServerResponse> router(UserHandler userHandler) {
         return RouterFunctions.route()
+                .GET(PATH, userHandler::getAll)
                 .GET(PATH + "/{userId}", userHandler::getOne)
                 .GET(PATH + "/details/{username}", userHandler::getOneByUsername)
                 .POST(PATH, userHandler::save)

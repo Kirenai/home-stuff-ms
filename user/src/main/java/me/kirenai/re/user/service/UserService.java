@@ -9,10 +9,13 @@ import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.entity.User;
 import me.kirenai.re.user.mapper.UserMapper;
 import me.kirenai.re.user.repository.UserRepository;
+import me.kirenai.re.user.repository.UserSortingRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -21,9 +24,16 @@ import reactor.core.publisher.Mono;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserSortingRepository userSortingRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleManager roleManager;
+
+    public Flux<UserResponse> findAll(Pageable pageable) {
+        log.info("Invoking UserService.findAll method");
+        return this.userSortingRepository.findAllBy(pageable)
+                .map(this.userMapper::mapOutUserToUserResponse);
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<UserResponse> findOne(Long id) {
