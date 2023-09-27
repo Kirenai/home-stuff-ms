@@ -7,6 +7,7 @@ import me.kirenai.re.nourishment.service.NourishmentService;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
 import me.kirenai.re.security.jwt.JwtTokenFilter;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.security.validator.GlobalValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ class NourishmentRouterTest {
     private NourishmentService nourishmentService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private GlobalValidator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/nourishments");
 

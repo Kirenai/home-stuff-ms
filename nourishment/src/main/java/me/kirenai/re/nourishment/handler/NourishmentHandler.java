@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.service.NourishmentService;
+import me.kirenai.re.security.dto.ErrorResponse;
+import me.kirenai.re.security.validator.GlobalValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,12 +14,15 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class NourishmentHandler {
 
     private final NourishmentService nourishmentService;
+    private final GlobalValidator validator;
 
     public Mono<ServerResponse> findOne(ServerRequest request) {
         String nourishmentId = request.pathVariable("nourishmentId");
@@ -47,24 +52,38 @@ public class NourishmentHandler {
         String categoryId = request.pathVariable("categoryId");
         String token = request.headers().firstHeader(HttpHeaders.AUTHORIZATION);
         return request.bodyToMono(NourishmentRequest.class)
-                .flatMap(nourishmentRequest -> this.nourishmentService.create(
-                        Long.valueOf(userId), Long.valueOf(categoryId), nourishmentRequest, token)
-                )
-                .flatMap(nourishment -> ServerResponse.status(HttpStatus.CREATED)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(nourishment)
-                );
+                .flatMap(nourishmentRequest -> {
+                    List<ErrorResponse> errors = this.validator.validate(nourishmentRequest);
+                    if (!errors.isEmpty()) {
+                        return ServerResponse.badRequest().bodyValue(errors);
+                    }
+                    return this.nourishmentService.create(
+                            Long.valueOf(userId),
+                            Long.valueOf(categoryId),
+                            nourishmentRequest,
+                            token
+                    ).flatMap(nourishment -> ServerResponse.status(HttpStatus.CREATED)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(nourishment)
+                    );
+                });
     }
 
     public Mono<ServerResponse> update(ServerRequest request) {
         String nourishmentId = request.pathVariable("nourishmentId");
         return request.bodyToMono(NourishmentRequest.class)
-                .flatMap(nourishmentRequest ->
-                        this.nourishmentService.update(Long.valueOf(nourishmentId), nourishmentRequest))
-                .flatMap(nourishment -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(nourishment)
-                );
+                .flatMap(nourishmentRequest -> {
+                    List<ErrorResponse> errors = this.validator.validate(nourishmentRequest);
+                    if (!errors.isEmpty()) {
+                        return ServerResponse.badRequest().bodyValue(errors);
+                    }
+                    return this.nourishmentService.update(
+                            Long.valueOf(nourishmentId),
+                            nourishmentRequest
+                    ).flatMap(nourishment -> ServerResponse.ok()
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(nourishment));
+                });
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
