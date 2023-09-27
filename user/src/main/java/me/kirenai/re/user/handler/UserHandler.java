@@ -1,8 +1,9 @@
 package me.kirenai.re.user.handler;
 
-import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kirenai.re.security.dto.ErrorResponse;
+import me.kirenai.re.security.validator.GlobalValidator;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.service.UserService;
@@ -12,12 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Slf4j
 @Component
@@ -25,7 +26,7 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 
     private final UserService userService;
-    private final Validator validator;
+    private final GlobalValidator validator;
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         log.info("Invoking UserHandler.getAll method");
@@ -56,10 +57,9 @@ public class UserHandler {
         Mono<UserRequest> userRequestMono = request.bodyToMono(UserRequest.class);
         String token = request.headers().firstHeader(HttpHeaders.AUTHORIZATION);
         return userRequestMono.flatMap(userRequest -> {
-            BindingResult bindingResult = new BeanPropertyBindingResult(userRequest, UserRequest.class.getName());
-            validator.validate(bindingResult);
-            if (bindingResult.hasErrors()) {
-                return ServerResponse.badRequest().bodyValue(bindingResult.getAllErrors());
+            List<ErrorResponse> errors = this.validator.validate(userRequest);
+            if (!errors.isEmpty()) {
+                return ServerResponse.badRequest().bodyValue(errors);
             }
             return this.userService.create(userRequest, token)
                     .flatMap(userResponse -> ServerResponse
@@ -75,10 +75,9 @@ public class UserHandler {
         String userId = request.pathVariable("userId");
         Mono<UserRequest> userRequest = request.bodyToMono(UserRequest.class);
         return userRequest.flatMap(userR -> {
-            BindingResult bindingResult = new BeanPropertyBindingResult(userR, UserRequest.class.getName());
-            validator.validate(bindingResult);
-            if (bindingResult.hasErrors()) {
-                return ServerResponse.badRequest().bodyValue(bindingResult.getAllErrors());
+            List<ErrorResponse> errors = this.validator.validate(userRequest);
+            if (!errors.isEmpty()) {
+                return ServerResponse.badRequest().bodyValue(errors);
             }
             Mono<UserResponse> response = this.userService.update(Long.parseLong(userId), userR);
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(response);

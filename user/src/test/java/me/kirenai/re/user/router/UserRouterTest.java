@@ -2,6 +2,7 @@ package me.kirenai.re.user.router;
 
 import me.kirenai.re.security.jwt.JwtTokenFilter;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.security.validator.GlobalValidator;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.handler.UserHandler;
@@ -39,6 +40,8 @@ class UserRouterTest {
     private UserService userService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private GlobalValidator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/users");
 
