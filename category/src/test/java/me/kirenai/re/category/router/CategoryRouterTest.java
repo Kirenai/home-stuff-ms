@@ -7,6 +7,7 @@ import me.kirenai.re.category.mock.CategoryMocks;
 import me.kirenai.re.category.service.CategoryService;
 import me.kirenai.re.security.jwt.JwtTokenFilter;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.security.validator.GlobalValidator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,8 @@ class CategoryRouterTest {
     private CategoryService categoryService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private GlobalValidator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/categories");
 

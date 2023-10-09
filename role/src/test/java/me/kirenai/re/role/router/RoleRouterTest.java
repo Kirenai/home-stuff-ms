@@ -7,6 +7,7 @@ import me.kirenai.re.role.service.RoleService;
 import me.kirenai.re.role.util.RoleMocks;
 import me.kirenai.re.security.jwt.JwtTokenFilter;
 import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.security.validator.GlobalValidator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,8 @@ class RoleRouterTest {
     private RoleService roleService;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    @MockBean
+    private GlobalValidator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/roles");
 

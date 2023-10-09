@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.role.dto.RoleRequest;
 import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.service.RoleService;
+import me.kirenai.re.security.dto.ErrorResponse;
+import me.kirenai.re.security.validator.GlobalValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import java.util.List;
 public class RoleHandler {
 
     private final RoleService roleService;
+    private final GlobalValidator validator;
 
     public Mono<ServerResponse> getRole(ServerRequest request) {
         log.info("Invoking RoleHandler.getRole method");
@@ -40,10 +43,17 @@ public class RoleHandler {
     public Mono<ServerResponse> save(ServerRequest request) {
         log.info("Invoking RoleHandler.save method");
         return request.bodyToMono(RoleRequest.class)
-                .flatMap(roleRequest -> this.roleService.create(roleRequest)
-                        .flatMap(roleResponse -> ServerResponse.status(HttpStatus.CREATED)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(roleResponse)));
+                .flatMap(roleRequest -> {
+                    List<ErrorResponse> errors = this.validator.validate(roleRequest);
+                    if (!errors.isEmpty()) {
+                        return ServerResponse.badRequest().bodyValue(errors);
+                    }
+                    return this.roleService.create(roleRequest)
+                            .flatMap(roleResponse -> ServerResponse.status(HttpStatus.CREATED)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .bodyValue(roleResponse)
+                            );
+                });
     }
 
     public Mono<ServerResponse> saveRoleUser(ServerRequest request) {
@@ -59,10 +69,17 @@ public class RoleHandler {
         log.info("Invoking RoleHandler.update method");
         String roleId = request.pathVariable("roleId");
         return request.bodyToMono(RoleRequest.class)
-                .flatMap(roleRequest -> this.roleService.update(Long.parseLong(roleId), roleRequest)
-                        .flatMap(roleResponse -> ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(roleResponse)));
+                .flatMap(roleRequest -> {
+                    List<ErrorResponse> errors = this.validator.validate(roleRequest);
+                    if (!errors.isEmpty()) {
+                        return ServerResponse.badRequest().bodyValue(errors);
+                    }
+                    return this.roleService.update(Long.parseLong(roleId), roleRequest)
+                            .flatMap(roleResponse -> ServerResponse.ok()
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .bodyValue(roleResponse)
+                            );
+                });
     }
 
 }
