@@ -2,7 +2,7 @@ package me.kirenai.re.security.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.security.util.SecurityUtil;
+import me.kirenai.re.security.api.UserResource;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ReactiveAuthUserDetailsService implements ReactiveUserDetailsService {
 
-    private final SecurityUtil securityUtil;
+    private final UserResource userResource;
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         log.info("Invoke ReactiveAuthUserDetailsService.findByUsername method");
-        return this.securityUtil.getUserDetails(username);
+        return this.userResource.getUserDetails(username);
     }
 
 }

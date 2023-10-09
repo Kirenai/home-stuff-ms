@@ -1,4 +1,4 @@
-package me.kirenai.re.security.util;
+package me.kirenai.re.security.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +14,14 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static me.kirenai.re.security.util.Constants.GET_ONE_USER_DETAILS_URL;
+import static me.kirenai.re.security.util.Constants.GET_ROLES_USER_URL;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SecurityUtil {
+public class UserResource {
 
-    public static final String GET_ONE_USER_DETAILS_URL = "http://USER/api/v0/users/details/{username}";
-    public static final String GET_ROLES_USER_URL = "http://ROLE/api/v0/roles/user/{userId}";
     private final WebClient.Builder webClient;
     private final JwtTokenProvider jwtTokenProvider;
 

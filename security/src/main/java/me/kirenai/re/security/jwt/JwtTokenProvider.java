@@ -22,6 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static me.kirenai.re.security.util.Constants.AUTHORITIES;
+import static me.kirenai.re.security.util.Constants.AUTHORITY;
+
 @Getter
 @Setter
 @Slf4j
@@ -29,8 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    public static final String AUTHORITIES = "authorities";
-    public static final String AUTHORITY = "authority";
 
     @Value(value = "${application.jwt.secretKey}")
     private String secretKey;
