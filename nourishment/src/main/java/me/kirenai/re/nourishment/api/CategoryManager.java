@@ -3,7 +3,6 @@ package me.kirenai.re.nourishment.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.dto.CategoryResponse;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,16 +15,14 @@ public class CategoryManager {
     private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/v0/categories/{categoryId}";
 
     private final WebClient.Builder webClient;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public Mono<CategoryResponse> findCategory(Long categoryId, String token) {
+    public Mono<CategoryResponse> findCategory(Long categoryId) {
         log.info("Invoking CategoryManager.findCategory method");
         log.info("Call category service");
         return this.webClient
                 .build()
                 .get()
                 .uri(CATEGORY_URL_GET_ONE, categoryId)
-                .header(this.jwtTokenProvider.getAuthorizationHeader(), token)
                 .retrieve()
                 .bodyToMono(CategoryResponse.class);
     }

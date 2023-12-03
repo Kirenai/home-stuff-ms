@@ -60,8 +60,7 @@ public class NourishmentHandler {
                     return this.nourishmentService.create(
                             Long.valueOf(userId),
                             Long.valueOf(categoryId),
-                            nourishmentRequest,
-                            token
+                            nourishmentRequest
                     ).flatMap(nourishment -> ServerResponse.status(HttpStatus.CREATED)
                             .contentType(MediaType.APPLICATION_JSON)
                             .bodyValue(nourishment)

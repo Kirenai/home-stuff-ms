@@ -6,7 +6,7 @@
     <parent>
         <groupId>me.kirenai.re</groupId>
         <artifactId>home-stuff-ms</artifactId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>api-gateway</artifactId>
@@ -29,6 +29,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jjwt-api.version>0.11.5</jjwt-api.version>
     </properties>
 
     <dependencies>
@@ -43,6 +44,29 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.kirenai.re</groupId>
+            <artifactId>security</artifactId>
+            <version>${security.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>${jjwt-api.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

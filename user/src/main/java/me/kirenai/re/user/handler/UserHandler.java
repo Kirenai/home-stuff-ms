@@ -9,7 +9,6 @@ import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.service.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -48,20 +47,19 @@ public class UserHandler {
     public Mono<ServerResponse> getOneByUsername(ServerRequest request) {
         log.info("Invoking UserHandler.getOneByUsername method");
         String username = request.pathVariable("username");
-        Mono<me.kirenai.re.security.dto.UserResponse> response = this.userService.findByUsername(username);
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(response, me.kirenai.re.security.dto.UserResponse.class);
+        Mono<UserResponse> response = this.userService.findByUsername(username);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(response, UserResponse.class);
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
         log.info("Invoking UserHandler.save method");
         Mono<UserRequest> userRequestMono = request.bodyToMono(UserRequest.class);
-        String token = request.headers().firstHeader(HttpHeaders.AUTHORIZATION);
         return userRequestMono.flatMap(userRequest -> {
             List<ErrorResponse> errors = this.validator.validate(userRequest);
             if (!errors.isEmpty()) {
                 return ServerResponse.badRequest().bodyValue(errors);
             }
-            return this.userService.create(userRequest, token)
+            return this.userService.create(userRequest)
                     .flatMap(userResponse -> ServerResponse
                             .status(HttpStatus.CREATED)
                             .contentType(MediaType.APPLICATION_JSON)

@@ -6,7 +6,7 @@
     <parent>
         <groupId>me.kirenai.re</groupId>
         <artifactId>home-stuff-ms</artifactId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>category</artifactId>
@@ -47,10 +47,6 @@
             <version>${r2dbc-mysql.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
@@ -62,7 +58,7 @@
         <dependency>
             <groupId>me.kirenai.re</groupId>
             <artifactId>security</artifactId>
-            <version>${me.kirenai.re.security.version}</version>
+            <version>${security.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

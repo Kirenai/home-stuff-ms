@@ -1,37 +1,35 @@
 package me.kirenai.re.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.security.service.AuthUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.kirenai.re.security.util.Constants.AUTHORITIES;
-import static me.kirenai.re.security.util.Constants.AUTHORITY;
 
 @Getter
 @Setter
 @Slf4j
 @Configuration
+@PropertySource("classpath:security-default.properties")
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-
 
     @Value(value = "${application.jwt.secretKey}")
     private String secretKey;
@@ -39,69 +37,29 @@ public class JwtTokenProvider {
     private String tokenPrefix;
     @Value(value = "${application.jwt.tokenExpirationAfterDays}")
     private Integer tokenExpirationAfterDays;
-    @Value(value = "${application.jwt.internal.username}")
-    private String username;
-    @Value(value = "${application.jwt.internal.roleName}")
-    private String roleName;
 
     public String getAuthorizationHeader() {
         return HttpHeaders.AUTHORIZATION;
     }
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateJwtToken(String userId, String username, Collection<String> authorities) {
         return Jwts.builder()
-                .setId(((AuthUserDetails) authentication.getPrincipal()).getUserId().toString())
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES, authentication.getAuthorities())
+                .setId(userId)
+                .setSubject(username)
+                .claim(AUTHORITIES, authorities)
                 .setIssuedAt(new Date())
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now()
-                        .plusDays(this.getTokenExpirationAfterDays())))
-                .signWith(Keys.hmacShaKeyFor(this.getSecretKey().getBytes()))
+                        .plusDays(this.tokenExpirationAfterDays)))
+                .signWith(Keys.hmacShaKeyFor(this.secretKey.getBytes()))
                 .compact();
     }
 
-    @Deprecated
-    public HttpHeaders getCurrentTokenAsHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(this.getAuthorizationHeader(), "");
-        return headers;
-    }
-
-    public String generateInternalJwtToken() {
-        return Jwts.builder()
-                .setSubject(this.getUsername())
-                .claim(AUTHORITIES, List.of(new SimpleGrantedAuthority(this.getRoleName())))
-                .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now()
-                        .plusDays(this.getTokenExpirationAfterDays())))
-                .signWith(Keys.hmacShaKeyFor(this.getSecretKey().getBytes()))
-                .compact();
-    }
-
-    public String getJwtTokenFromRequest(ServerHttpRequest request) {
-        String bearerToken = request.getHeaders().getFirst(this.getAuthorizationHeader());
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(this.getTokenPrefix())) {
-            return bearerToken.substring(this.getTokenPrefix().length());
+    public String extractToken(ServerHttpRequest request) {
+        String bearerToken = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(this.tokenPrefix)) {
+            return bearerToken.substring(this.tokenPrefix.length());
         }
         return null;
-    }
-
-    public Claims getJwtBody(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(this.getSecretKey().getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public List<SimpleGrantedAuthority> getJwtGrantedAuthorities(String token) {
-        Claims claims = this.getJwtBody(token);
-        List<LinkedHashMap<String, String>> claimsAuthorities = claims.get(AUTHORITIES, List.class);
-        return claimsAuthorities
-                .stream()
-                .map(map -> map.get(AUTHORITY))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
     }
 
     public boolean validateJwtToken(String token) {

@@ -1,7 +1,5 @@
 package me.kirenai.re.user.router;
 
-import me.kirenai.re.security.jwt.JwtTokenFilter;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.security.validator.GlobalValidator;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
@@ -13,24 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-@WithMockUser
-@WebFluxTest(excludeFilters = @ComponentScan.Filter(
-        classes = {JwtTokenFilter.class}, type = FilterType.ASSIGNABLE_TYPE))
+@WebFluxTest
 @ContextConfiguration(classes = {UserRouter.class, UserHandler.class})
 class UserRouterTest {
 
@@ -38,8 +31,6 @@ class UserRouterTest {
     private WebTestClient webTestClient;
     @MockBean
     private UserService userService;
-    @MockBean
-    private JwtTokenProvider jwtTokenProvider;
     @MockBean
     private GlobalValidator validator;
 
@@ -88,11 +79,10 @@ class UserRouterTest {
     @DisplayName("Should create user")
     void shouldCreateUser() {
         UserResponse response = UserMocks.getUserResponse();
-        when(this.userService.create(any(), anyString()))
+        when(this.userService.create(any()))
                 .thenReturn(Mono.just(response));
 
         this.webTestClient
-                .mutateWith(SecurityMockServerConfigurers.csrf())
                 .post()
                 .uri(URL.toString())
                 .contentType(MediaType.APPLICATION_JSON)

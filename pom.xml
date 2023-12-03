@@ -6,7 +6,7 @@
     <groupId>me.kirenai.re</groupId>
     <artifactId>home-stuff-ms</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>2.0</version>
 
     <modules>
         <module>user</module>
@@ -28,8 +28,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring.boot.dependencies.version>3.1.5</spring.boot.dependencies.version>
-        <spring.boot.maven.plugin.version>3.1.5</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.1.6</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>3.1.6</spring.boot.maven.plugin.version>
         <maven.surefire.version>3.0.0-M8</maven.surefire.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
@@ -37,7 +37,7 @@
         <junit.jupiter.engine.version>5.9.1</junit.jupiter.engine.version>
         <org.projectlombok.version>1.18.24</org.projectlombok.version>
         <org.projectlombok.mapstruct.binding.version>0.2.0</org.projectlombok.mapstruct.binding.version>
-        <me.kirenai.re.security.version>1.0</me.kirenai.re.security.version>
+        <security.version>1.0</security.version>
         <me.kirenai.re.exception.version>1.0</me.kirenai.re.exception.version>
     </properties>
 

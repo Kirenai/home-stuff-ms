@@ -21,4 +21,5 @@ public class ConsumptionRouter {
                 .POST(PATH + "/user/{userId}/nourishment/{nourishmentId}", consumptionHandler::save)
                 .build();
     }
+
 }

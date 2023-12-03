@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -36,8 +37,8 @@ public class RoleHandler {
     public Mono<ServerResponse> getRolesByUserId(ServerRequest request) {
         log.info("Invoking RoleHandler.getRolesByUserId method");
         String userId = request.pathVariable("userId");
-        Mono<List<RoleResponse>> roleResponse = this.roleService.findAllByUserId(Long.parseLong(userId)).collectList();
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(roleResponse, RoleResponse.class);
+        Flux<RoleResponse> response = this.roleService.findAllByUserId(Long.parseLong(userId));
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(response, RoleResponse.class);
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {

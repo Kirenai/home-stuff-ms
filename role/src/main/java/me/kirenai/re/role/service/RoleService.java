@@ -10,7 +10,6 @@ import me.kirenai.re.role.entity.RoleUser;
 import me.kirenai.re.role.mapper.RoleMapper;
 import me.kirenai.re.role.repository.RoleRepository;
 import me.kirenai.re.role.repository.RoleUserRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,7 +34,6 @@ public class RoleService {
 //                .toList();
 //    }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Mono<RoleResponse> findOne(Long roleId) {
         log.info("Invoking RoleService.findOne method");
         return this.roleRepository.findById(roleId)
@@ -43,7 +41,6 @@ public class RoleService {
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Flux<RoleResponse> findAllByUserId(Long userId) {
         log.info("Invoking RoleService.findAllByUserId method");
         return this.roleUserRepository.findByUserId(userId)
@@ -51,7 +48,6 @@ public class RoleService {
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Mono<RoleResponse> create(RoleRequest roleRequest) {
         log.info("Invoking RoleService.create method");
         Role role = this.roleMapper.mapInRoleRequestToRole(roleRequest);
@@ -59,7 +55,6 @@ public class RoleService {
                 .map(this.roleMapper::mapOutRoleToRoleResponse);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Mono<Void> createRoleUser(Long userId) {
         log.info("Invoking RoleService.createRoleUser method");
         return this.roleRepository.findByName(DEFAULT_ROLE)
@@ -73,7 +68,6 @@ public class RoleService {
                 }).flatMap(roleUser -> Mono.empty());
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Mono<RoleResponse> update(Long roleId, RoleRequest roleRequest) {
         log.info("Invoking RoleService.update method");
         return this.roleRepository.findById(roleId)

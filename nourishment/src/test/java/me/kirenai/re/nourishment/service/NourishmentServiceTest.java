@@ -173,9 +173,9 @@ class NourishmentServiceTest {
 
         when(this.mapper.mapInNourishmentRequestToNourishment(any()))
                 .thenReturn(NourishmentMocks.getNourishment());
-        when(this.userManager.findUser(anyLong(), anyString()))
+        when(this.userManager.findUser(anyLong()))
                 .thenReturn(Mono.just(UserMocks.getUserResponse()));
-        when(this.categoryManager.findCategory(anyLong(), anyString()))
+        when(this.categoryManager.findCategory(anyLong()))
                 .thenReturn(Mono.just(CategoryMocks.getCategoryResponse()));
         when(this.nourishmentRepository.save(any()))
                 .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
@@ -183,7 +183,7 @@ class NourishmentServiceTest {
                 .thenReturn(nourishmentResponse);
 
         Mono<NourishmentResponse> response =
-                this.nourishmentService.create(1L, 1L, NourishmentMocks.getNourishmentRequest(), "Bearer ");
+                this.nourishmentService.create(1L, 1L, NourishmentMocks.getNourishmentRequest());
 
         StepVerifier
                 .create(response)
@@ -191,8 +191,8 @@ class NourishmentServiceTest {
                 .verifyComplete();
 
         verify(this.mapper, times(1)).mapInNourishmentRequestToNourishment(any());
-        verify(this.userManager, times(1)).findUser(anyLong(), anyString());
-        verify(this.categoryManager, times(1)).findCategory(anyLong(), anyString());
+        verify(this.userManager, times(1)).findUser(anyLong());
+        verify(this.categoryManager, times(1)).findCategory(anyLong());
         verify(this.nourishmentRepository, times(1)).save(any());
         verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
     }

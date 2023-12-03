@@ -5,8 +5,6 @@ import me.kirenai.re.role.dto.RoleResponse;
 import me.kirenai.re.role.handler.RoleHandler;
 import me.kirenai.re.role.service.RoleService;
 import me.kirenai.re.role.util.RoleMocks;
-import me.kirenai.re.security.jwt.JwtTokenFilter;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
 import me.kirenai.re.security.validator.GlobalValidator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -30,9 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-@WithMockUser
-@WebFluxTest(excludeFilters = @ComponentScan.Filter(
-        classes = {JwtTokenFilter.class}, type = FilterType.ASSIGNABLE_TYPE))
+@WebFluxTest
 @ContextConfiguration(classes = {RoleRouter.class, RoleHandler.class})
 class RoleRouterTest {
 
@@ -40,8 +32,6 @@ class RoleRouterTest {
     private WebTestClient webTestClient;
     @MockBean
     private RoleService roleService;
-    @MockBean
-    private JwtTokenProvider jwtTokenProvider;
     @MockBean
     private GlobalValidator validator;
 
@@ -85,7 +75,6 @@ class RoleRouterTest {
         when(this.roleService.create(any())).thenReturn(Mono.just(roleResponse));
 
         this.webTestClient
-                .mutateWith(SecurityMockServerConfigurers.csrf())
                 .post()
                 .uri(URL.toString())
                 .accept(MediaType.APPLICATION_JSON)
@@ -105,7 +94,6 @@ class RoleRouterTest {
         when(this.roleService.createRoleUser(anyLong())).thenReturn(Mono.empty());
 
         this.webTestClient
-                .mutateWith(SecurityMockServerConfigurers.csrf())
                 .post()
                 .uri(URL.append("/user/1").toString())
                 .accept(MediaType.APPLICATION_JSON)
@@ -121,7 +109,6 @@ class RoleRouterTest {
         when(this.roleService.update(anyLong(), any())).thenReturn(Mono.just(roleResponse));
 
         this.webTestClient
-                .mutateWith(SecurityMockServerConfigurers.csrf())
                 .put()
                 .uri(URL.append("/1").toString())
                 .accept(MediaType.APPLICATION_JSON)
