@@ -34,10 +34,12 @@ public class AuthHandler {
                     if (!errors.isEmpty()) {
                         return ServerResponse.badRequest().bodyValue(errors);
                     }
-                    Mono<String> token = this.authService.login(loginRequest);
-                    return ServerResponse.status(HttpStatus.OK)
-                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                            .build();
+                    return this.authService.login(loginRequest)
+                            .flatMap(token ->
+                                    ServerResponse.status(HttpStatus.OK)
+                                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                                            .build()
+                            );
                 });
     }
 
