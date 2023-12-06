@@ -5,7 +5,7 @@ import me.kirenai.re.category.dto.CategoryResponse;
 import me.kirenai.re.category.handler.CategoryHandler;
 import me.kirenai.re.category.mock.CategoryMocks;
 import me.kirenai.re.category.service.CategoryService;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class CategoryRouterTest {
     @MockBean
     private CategoryService categoryService;
     @MockBean
-    private GlobalValidator validator;
+    private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/categories");
 

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.category.dto.CategoryRequest;
 import me.kirenai.re.category.service.CategoryService;
 import me.kirenai.re.security.dto.ErrorResponse;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.util.List;
 public class CategoryHandler {
 
     private final CategoryService categoryService;
-    private final GlobalValidator validator;
+    private final Validator validator;
 
     public Mono<ServerResponse> findOne(ServerRequest request) {
         log.info("Invoking CategoryHandler.findOne method");

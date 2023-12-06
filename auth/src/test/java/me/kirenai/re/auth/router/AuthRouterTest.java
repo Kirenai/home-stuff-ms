@@ -5,7 +5,7 @@ import me.kirenai.re.auth.dto.RegisterRequest;
 import me.kirenai.re.auth.handler.AuthHandler;
 import me.kirenai.re.auth.service.AuthService;
 import me.kirenai.re.auth.util.AuthMocks;
-import me.kirenai.re.security.jwt.JwtTokenProvider;
+import me.kirenai.re.security.validator.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -29,7 +29,7 @@ class AuthRouterTest {
     @MockBean
     private AuthService authService;
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
+    private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/auth");
 

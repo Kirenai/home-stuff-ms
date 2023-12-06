@@ -68,7 +68,7 @@
         <dependency>
             <groupId>me.kirenai.re</groupId>
             <artifactId>exception</artifactId>
-            <version>${me.kirenai.re.exception.version}</version>
+            <version>${exception.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

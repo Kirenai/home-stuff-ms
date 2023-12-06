@@ -5,7 +5,7 @@ import me.kirenai.re.nourishment.dto.NourishmentResponse;
 import me.kirenai.re.nourishment.handler.NourishmentHandler;
 import me.kirenai.re.nourishment.service.NourishmentService;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ class NourishmentRouterTest {
     @MockBean
     private NourishmentService nourishmentService;
     @MockBean
-    private GlobalValidator validator;
+    private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/nourishments");
 

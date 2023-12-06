@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.service.NourishmentService;
 import me.kirenai.re.security.dto.ErrorResponse;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ import java.util.List;
 public class NourishmentHandler {
 
     private final NourishmentService nourishmentService;
-    private final GlobalValidator validator;
+    private final Validator validator;
 
     public Mono<ServerResponse> findOne(ServerRequest request) {
         String nourishmentId = request.pathVariable("nourishmentId");
@@ -50,7 +50,6 @@ public class NourishmentHandler {
     public Mono<ServerResponse> save(ServerRequest request) {
         String userId = request.pathVariable("userId");
         String categoryId = request.pathVariable("categoryId");
-        String token = request.headers().firstHeader(HttpHeaders.AUTHORIZATION);
         return request.bodyToMono(NourishmentRequest.class)
                 .flatMap(nourishmentRequest -> {
                     List<ErrorResponse> errors = this.validator.validate(nourishmentRequest);

@@ -37,8 +37,8 @@
         <junit.jupiter.engine.version>5.9.1</junit.jupiter.engine.version>
         <org.projectlombok.version>1.18.24</org.projectlombok.version>
         <org.projectlombok.mapstruct.binding.version>0.2.0</org.projectlombok.mapstruct.binding.version>
-        <security.version>1.0</security.version>
-        <me.kirenai.re.exception.version>1.0</me.kirenai.re.exception.version>
+        <security.version>2.0</security.version>
+        <exception.version>2.0</exception.version>
     </properties>
 
     <dependencies>

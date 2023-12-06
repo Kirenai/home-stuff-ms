@@ -3,7 +3,7 @@ package me.kirenai.re.user.handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.security.dto.ErrorResponse;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.service.UserService;
@@ -25,7 +25,7 @@ import java.util.List;
 public class UserHandler {
 
     private final UserService userService;
-    private final GlobalValidator validator;
+    private final Validator validator;
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         log.info("Invoking UserHandler.getAll method");

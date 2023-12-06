@@ -1,6 +1,6 @@
 package me.kirenai.re.user.router;
 
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import me.kirenai.re.user.dto.UserRequest;
 import me.kirenai.re.user.dto.UserResponse;
 import me.kirenai.re.user.handler.UserHandler;
@@ -32,7 +32,7 @@ class UserRouterTest {
     @MockBean
     private UserService userService;
     @MockBean
-    private GlobalValidator validator;
+    private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/users");
 

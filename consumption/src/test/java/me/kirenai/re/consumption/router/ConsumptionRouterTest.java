@@ -4,7 +4,7 @@ import me.kirenai.re.consumption.dto.ConsumptionRequest;
 import me.kirenai.re.consumption.handler.ConsumptionHandler;
 import me.kirenai.re.consumption.service.ConsumptionService;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ class ConsumptionRouterTest {
     @MockBean
     private ConsumptionService consumptionService;
     @MockBean
-    private GlobalValidator validator;
+    private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/consumptions");
 

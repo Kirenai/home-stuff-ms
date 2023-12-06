@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.kirenai.re.consumption.dto.ConsumptionRequest;
 import me.kirenai.re.consumption.service.ConsumptionService;
 import me.kirenai.re.security.dto.ErrorResponse;
-import me.kirenai.re.security.validator.GlobalValidator;
+import me.kirenai.re.security.validator.Validator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ConsumptionHandler {
 
     private final ConsumptionService consumptionService;
-    private final GlobalValidator validator;
+    private final Validator validator;
 
     public Mono<ServerResponse> findOne(ServerRequest request) {
         String consumptionId = request.pathVariable("consumptionId");
