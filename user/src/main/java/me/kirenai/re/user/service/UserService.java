@@ -54,10 +54,8 @@ public class UserService {
         User user = this.userMapper.mapInUserRequestToUser(userRequest);
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user)
-                .flatMap(userSaved -> {
-                    this.roleManager.createRoleUser(userSaved).subscribe();
-                    return Mono.just(userSaved);
-                })
+                .flatMap(userSaved -> this.roleManager.createRoleUser(userSaved)
+                        .thenReturn(userSaved))
                 .map(this.userMapper::mapOutUserToUserResponse);
     }
 
