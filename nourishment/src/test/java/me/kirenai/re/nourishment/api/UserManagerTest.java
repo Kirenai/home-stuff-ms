@@ -12,6 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -27,7 +29,7 @@ class UserManagerTest {
 
     @Test
     @DisplayName("Should verify user service call")
-    public void findUserTest() {
+    public void findUserTest() throws IOException {
         WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestHeadersUriSpec requestHeaderUriSpecMock = mock(WebClient.RequestHeadersUriSpec.class);
         WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
@@ -39,13 +41,13 @@ class UserManagerTest {
         when(requestHeaderUriSpecMock.retrieve())
                 .thenReturn(responseSpecMock);
         when(responseSpecMock.bodyToMono(UserResponse.class))
-                .thenReturn(Mono.just(UserMocks.getUserResponse()));
+                .thenReturn(Mono.just(UserMocks.getInstance().getUserResponse()));
 
         Mono<UserResponse> userResponse = this.userManager.findUser(1L);
 
         StepVerifier
                 .create(userResponse)
-                .expectNext(UserMocks.getUserResponse())
+                .expectNext(UserMocks.getInstance().getUserResponse())
                 .verifyComplete();
     }
 

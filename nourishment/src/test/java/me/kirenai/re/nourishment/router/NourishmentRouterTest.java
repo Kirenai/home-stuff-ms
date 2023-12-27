@@ -2,6 +2,7 @@ package me.kirenai.re.nourishment.router;
 
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
+import me.kirenai.re.nourishment.dto.NourishmentTypeUnitResponse;
 import me.kirenai.re.nourishment.handler.NourishmentHandler;
 import me.kirenai.re.nourishment.service.NourishmentService;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.cloud.config.client.ConfigServerConfigDataLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -21,7 +22,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@WebFluxTest
+@WebFluxTest(excludeAutoConfiguration = {ConfigServerConfigDataLoader.class})
 @ContextConfiguration(classes = {NourishmentRouter.class, NourishmentHandler.class})
 class NourishmentRouterTest {
     @Autowired
@@ -49,7 +50,8 @@ class NourishmentRouterTest {
                 .value(NourishmentResponse::getImageUrl, equalTo(nourishmentResponse.getImageUrl()))
                 .value(NourishmentResponse::getDescription, equalTo(nourishmentResponse.getDescription()))
                 .value(NourishmentResponse::getIsAvailable, equalTo(nourishmentResponse.getIsAvailable()))
-                .value(NourishmentResponse::getUnit, equalTo(nourishmentResponse.getUnit()));
+                .value(n -> ((NourishmentTypeUnitResponse) n.getType()).getNourishmentType(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getNourishmentType()))
+                .value(n -> ((NourishmentTypeUnitResponse) n.getType()).getUnit(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getUnit()));
     }
 
     @Test
@@ -90,7 +92,6 @@ class NourishmentRouterTest {
         this.webTestClient
                 .post()
                 .uri(URL.append("/user/1/category/1").toString())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                 .body(Mono.just(NourishmentMocks.getNourishmentRequest()), NourishmentRequest.class)
                 .exchange()
                 .expectStatus().isCreated()
@@ -100,7 +101,8 @@ class NourishmentRouterTest {
                 .value(NourishmentResponse::getImageUrl, equalTo(nourishmentResponse.getImageUrl()))
                 .value(NourishmentResponse::getDescription, equalTo(nourishmentResponse.getDescription()))
                 .value(NourishmentResponse::getIsAvailable, equalTo(nourishmentResponse.getIsAvailable()))
-                .value(NourishmentResponse::getPercentage, equalTo(nourishmentResponse.getPercentage()));
+                .value(n -> ((NourishmentTypeUnitResponse) n.getType()).getNourishmentType(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getNourishmentType()))
+                .value(n -> ((NourishmentTypeUnitResponse) n.getType()).getUnit(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getUnit()));
     }
 
     @Test
@@ -113,7 +115,6 @@ class NourishmentRouterTest {
         this.webTestClient
                 .put()
                 .uri(URL.append("/1").toString())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                 .body(Mono.just(NourishmentMocks.getNourishmentRequest()), NourishmentRequest.class)
                 .exchange()
                 .expectStatus().isOk()
@@ -123,7 +124,8 @@ class NourishmentRouterTest {
                 .value(NourishmentResponse::getImageUrl, equalTo(nourishmentResponse.getImageUrl()))
                 .value(NourishmentResponse::getDescription, equalTo(nourishmentResponse.getDescription()))
                 .value(NourishmentResponse::getIsAvailable, equalTo(nourishmentResponse.getIsAvailable()))
-                .value(NourishmentResponse::getPercentage, equalTo(nourishmentResponse.getPercentage()));
+                .value(n -> ((NourishmentTypeUnitResponse) n.getType()).getNourishmentType(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getNourishmentType()))
+                .value(nr -> ((NourishmentTypeUnitResponse) nr.getType()).getUnit(), equalTo(((NourishmentTypeUnitResponse) nourishmentResponse.getType()).getUnit()));
     }
 
     @Test
@@ -134,7 +136,6 @@ class NourishmentRouterTest {
         this.webTestClient
                 .delete()
                 .uri(URL.append("/1").toString())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                 .exchange()
                 .expectStatus().isOk();
     }

@@ -7,15 +7,13 @@ import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
-import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
+import me.kirenai.re.nourishment.util.MapperUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -41,36 +39,38 @@ public class NourishmentService {
         return this.nourishmentRepository.findById(nourishmentId)
                 .switchIfEmpty(Mono.error(new NourishmentNotFoundExceptionFactory(
                         String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     public Flux<NourishmentResponse> findAllByUserId(Long userId) {
         log.info("Invoking NourishmentService.findNourishmentsByUserId method");
         return this.nourishmentRepository.findByUserId(userId)
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     public Flux<NourishmentResponse> findAllByIsAvailable(Boolean isAvailable) {
         log.info("Invoking NourishmentService.findAllNourishmentByStatus method");
         return this.nourishmentRepository.findByIsAvailable(isAvailable)
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     @Transactional
     public Mono<NourishmentResponse> create(Long userId, Long categoryId, NourishmentRequest nourishmentRequest) {
         log.info("Invoking NourishmentService.create method");
-        Nourishment nourishment = this.mapper.mapInNourishmentRequestToNourishment(nourishmentRequest);
-        nourishment.setIsAvailable(Boolean.TRUE);
-        return this.userManager.findUser(userId)
-                .flatMap(userResponse -> {
-                    nourishment.setUserId(userResponse.getUserId());
-                    return this.categoryManager.findCategory(categoryId);
+        return this.mapper.mapInNourishmentToMono(nourishmentRequest)
+                .flatMap(nourishment -> {
+                    nourishment.setIsAvailable(Boolean.TRUE);
+                    return this.userManager.findUser(userId)
+                            .flatMap(userResponse -> {
+                                nourishment.setUserId(userResponse.getUserId());
+                                return this.categoryManager.findCategory(categoryId);
+                            })
+                            .flatMap(categoryResponse -> {
+                                nourishment.setCategoryId(categoryResponse.getCategoryId());
+                                return this.nourishmentRepository.save(nourishment);
+                            });
                 })
-                .flatMap(categoryResponse -> {
-                    nourishment.setCategoryId(categoryResponse.getCategoryId());
-                    return this.nourishmentRepository.save(nourishment);
-                })
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     @Transactional
@@ -79,21 +79,9 @@ public class NourishmentService {
         return this.nourishmentRepository.findById(nourishmentId)
                 .switchIfEmpty(Mono.error(new NourishmentNotFoundExceptionFactory(
                         String.format("Nourishment not found by nourishment id: %s", nourishmentId))))
-                .flatMap(nourishment -> {
-                    nourishment.setName(nourishmentRequest.getName());
-                    nourishment.setDescription(nourishmentRequest.getDescription());
-                    nourishment.setImageUrl(nourishmentRequest.getImageUrl());
-                    if (Objects.nonNull(nourishmentRequest.getUnit())) {
-                        nourishment.setUnit(nourishmentRequest.getUnit());
-                        if (nourishmentRequest.getUnit() == 0) nourishment.setIsAvailable(Boolean.FALSE);
-                    }
-                    if (Objects.nonNull(nourishmentRequest.getPercentage())) {
-                        nourishment.setPercentage(nourishmentRequest.getPercentage());
-                        if (nourishmentRequest.getPercentage() == 0) nourishment.setIsAvailable(Boolean.FALSE);
-                    }
-                    return this.nourishmentRepository.save(nourishment);
-                })
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .map(nourishment -> MapperUtils.loadDataToNourishment(nourishment, nourishmentRequest))
+                .flatMap(this.nourishmentRepository::save)
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     public Mono<Void> delete(Long nourishmentId) {

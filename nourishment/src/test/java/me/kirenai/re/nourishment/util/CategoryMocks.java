@@ -1,23 +1,25 @@
 package me.kirenai.re.nourishment.util;
 
+import me.kirenai.re.nourishment.util.helper.ObjectMapperHelper;
 import me.kirenai.re.nourishment.dto.CategoryResponse;
-import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
 
 public class CategoryMocks {
 
-    public static CategoryResponse categoryMock(Long categoryId, String name) {
-        return CategoryResponse.builder()
-                .categoryId(categoryId)
-                .name(name)
-                .build();
+    private static final CategoryMocks INSTANCE = new CategoryMocks();
+
+    private final ObjectMapperHelper mapper = new ObjectMapperHelper();
+
+    public static CategoryMocks getInstance() {
+        return INSTANCE;
     }
 
-    public static CategoryResponse getCategoryResponse() {
-        return categoryMock(1L, "category1");
-    }
-
-    public static ResponseEntity<CategoryResponse> getCategoryResponseEntity() {
-        return ResponseEntity.ok(getCategoryResponse());
+    public CategoryResponse getCategoryResponse() throws IOException {
+        return this.mapper.readValue(
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("mock/category/CategoryResponse.json"),
+                CategoryResponse.class
+        );
     }
 
 }

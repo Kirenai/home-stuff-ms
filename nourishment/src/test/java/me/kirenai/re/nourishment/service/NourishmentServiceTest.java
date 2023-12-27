@@ -15,10 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +63,8 @@ class NourishmentServiceTest {
 //        verify(this.mapper, times(3)).mapOutNourishmentToNourishmentResponse(any());
 //    }
 
+    @BeforeTestMethod()
+
     @Test
     @DisplayName("Should find a list of nourishment by user id")
     void findAllByUserIdTest() {
@@ -69,8 +73,12 @@ class NourishmentServiceTest {
 
         when(this.nourishmentRepository.findByUserId(anyLong()))
                 .thenReturn(Flux.fromIterable(NourishmentMocks.getNourishmentPage().toList()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse.get(0), nourishmentResponse.get(1), nourishmentResponse.get(2));
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(
+                        Mono.just(nourishmentResponse.get(0)),
+                        Mono.just(nourishmentResponse.get(1)),
+                        Mono.just(nourishmentResponse.get(2))
+                );
 
         Flux<NourishmentResponse> response = this.nourishmentService.findAllByUserId(1L);
 
@@ -82,7 +90,7 @@ class NourishmentServiceTest {
                 .verifyComplete();
 
         verify(this.nourishmentRepository, times(1)).findByUserId(anyLong());
-        verify(this.mapper, times(3)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(nourishmentResponse.size())).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
@@ -92,8 +100,8 @@ class NourishmentServiceTest {
 
         when(this.nourishmentRepository.findById(anyLong()))
                 .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse);
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(Mono.just(nourishmentResponse));
 
         Mono<NourishmentResponse> response = nourishmentService.findOne(1L);
 
@@ -103,7 +111,7 @@ class NourishmentServiceTest {
                 .verifyComplete();
 
         verify(this.nourishmentRepository, times(1)).findById(anyLong());
-        verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(1)).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
@@ -130,8 +138,8 @@ class NourishmentServiceTest {
 
         when(this.nourishmentRepository.findByIsAvailable(anyBoolean()))
                 .thenReturn(Flux.just(NourishmentMocks.getNourishment()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse);
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(Mono.just(nourishmentResponse));
 
         Flux<NourishmentResponse> response = this.nourishmentService.findAllByIsAvailable(true);
 
@@ -141,7 +149,7 @@ class NourishmentServiceTest {
                 .verifyComplete();
 
         verify(this.nourishmentRepository, times(1)).findByIsAvailable(anyBoolean());
-        verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(1)).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
@@ -152,8 +160,8 @@ class NourishmentServiceTest {
 
         when(this.nourishmentRepository.findByIsAvailable(anyBoolean()))
                 .thenReturn(Flux.just(NourishmentMocks.getNourishment()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse);
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(Mono.just(nourishmentResponse));
 
         Flux<NourishmentResponse> response = this.nourishmentService.findAllByIsAvailable(false);
 
@@ -163,24 +171,24 @@ class NourishmentServiceTest {
                 .verifyComplete();
 
         verify(this.nourishmentRepository, times(1)).findByIsAvailable(anyBoolean());
-        verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(1)).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
     @DisplayName("Should create a nourishment")
-    void createTest() {
+    void createTest() throws IOException {
         NourishmentResponse nourishmentResponse = NourishmentMocks.getNourishmentResponse();
 
-        when(this.mapper.mapInNourishmentRequestToNourishment(any()))
-                .thenReturn(NourishmentMocks.getNourishment());
+        when(this.mapper.mapInNourishmentToMono(any()))
+                .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
         when(this.userManager.findUser(anyLong()))
-                .thenReturn(Mono.just(UserMocks.getUserResponse()));
+                .thenReturn(Mono.just(UserMocks.getInstance().getUserResponse()));
         when(this.categoryManager.findCategory(anyLong()))
-                .thenReturn(Mono.just(CategoryMocks.getCategoryResponse()));
+                .thenReturn(Mono.just(CategoryMocks.getInstance().getCategoryResponse()));
         when(this.nourishmentRepository.save(any()))
                 .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse);
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(Mono.just(nourishmentResponse));
 
         Mono<NourishmentResponse> response =
                 this.nourishmentService.create(1L, 1L, NourishmentMocks.getNourishmentRequest());
@@ -190,11 +198,11 @@ class NourishmentServiceTest {
                 .expectNext(nourishmentResponse)
                 .verifyComplete();
 
-        verify(this.mapper, times(1)).mapInNourishmentRequestToNourishment(any());
+        verify(this.mapper, times(1)).mapInNourishmentToMono(any());
         verify(this.userManager, times(1)).findUser(anyLong());
         verify(this.categoryManager, times(1)).findCategory(anyLong());
         verify(this.nourishmentRepository, times(1)).save(any());
-        verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(1)).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
@@ -206,8 +214,8 @@ class NourishmentServiceTest {
                 .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
         when(this.nourishmentRepository.save(any()))
                 .thenReturn(Mono.just(NourishmentMocks.getNourishment()));
-        when(this.mapper.mapOutNourishmentToNourishmentResponse(any()))
-                .thenReturn(nourishmentResponse);
+        when(this.mapper.mapOutNourishmentResponseToMono(any()))
+                .thenReturn(Mono.just(nourishmentResponse));
 
         Mono<NourishmentResponse> response = this.nourishmentService.update(1L, NourishmentMocks.getNourishmentRequest());
 
@@ -218,7 +226,7 @@ class NourishmentServiceTest {
 
         verify(this.nourishmentRepository, times(1)).findById(anyLong());
         verify(this.nourishmentRepository, times(1)).save(any());
-        verify(this.mapper, times(1)).mapOutNourishmentToNourishmentResponse(any());
+        verify(this.mapper, times(1)).mapOutNourishmentResponseToMono(any());
     }
 
     @Test
@@ -246,7 +254,7 @@ class NourishmentServiceTest {
         Mono<Void> response = this.nourishmentService.delete(1L);
 
         StepVerifier
-                .create(response.log())
+                .create(response)
                 .verifyComplete();
     }
 

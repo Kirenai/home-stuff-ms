@@ -1,26 +1,25 @@
 package me.kirenai.re.nourishment.util;
 
 import me.kirenai.re.nourishment.dto.UserResponse;
-import org.springframework.http.ResponseEntity;
+import me.kirenai.re.nourishment.util.helper.ObjectMapperHelper;
+
+import java.io.IOException;
 
 public class UserMocks {
 
-    public static UserResponse userResponseMock(Long userId, String username, String firstName, String lastName, Integer age) {
-        return UserResponse.builder()
-                .userId(userId)
-                .username(username)
-                .firstName(firstName)
-                .lastName(lastName)
-                .age(age)
-                .build();
+    private static final UserMocks INSTANCE = new UserMocks();
+
+    private final ObjectMapperHelper mapper = new ObjectMapperHelper();
+
+    public static UserMocks getInstance() {
+        return INSTANCE;
     }
 
-    public static UserResponse getUserResponse() {
-        return userResponseMock(1L, "username1", "firstName1", "lastName1", 1);
-    }
-
-    public static ResponseEntity<UserResponse> getUserResponseEntity() {
-        return ResponseEntity.ok(getUserResponse());
+    public UserResponse getUserResponse() throws IOException {
+        return this.mapper.readValue(
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("mock/user/UserResponse.json"),
+                UserResponse.class
+        );
     }
 
 }

@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -26,7 +28,7 @@ class CategoryManagerTest {
 
     @Test
     @DisplayName("Should verify the category service call")
-    public void findCategoryTest() {
+    public void findCategoryTest() throws IOException {
         WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestHeadersUriSpec requestHeaderUriSpecMock = mock(WebClient.RequestHeadersUriSpec.class);
         WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
@@ -38,7 +40,7 @@ class CategoryManagerTest {
         when(requestHeaderUriSpecMock.retrieve())
                 .thenReturn(responseSpecMock);
         when(responseSpecMock.bodyToMono(CategoryResponse.class))
-                .thenReturn(Mono.just(CategoryMocks.getCategoryResponse()));
+                .thenReturn(Mono.just(CategoryMocks.getInstance().getCategoryResponse()));
 
         this.categoryManager.findCategory(1L);
     }

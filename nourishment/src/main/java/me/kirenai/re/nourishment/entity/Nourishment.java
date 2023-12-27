@@ -39,5 +39,7 @@ public class Nourishment {
     private Long userId;
     @Column("category_id")
     private Long categoryId;
+    @Column("nourishment_type_id")
+    private Long nourishmentTypeId;
 
 }
