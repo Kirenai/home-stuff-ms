@@ -25,19 +25,17 @@ class UserManagerTest {
     @InjectMocks
     private UserManager userManager;
     @Mock
-    private WebClient.Builder webClient;
+    private WebClient webClient;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("Should verify user service call")
     public void findUserTest() {
-        WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestHeadersUriSpec requestHeaderUriSpecMock = mock(WebClient.RequestHeadersUriSpec.class);
         WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
 
-        when(this.webClient.build()).thenReturn(webClientMock);
-        when(webClientMock.get()).thenReturn(requestHeaderUriSpecMock);
+        when(this.webClient.get()).thenReturn(requestHeaderUriSpecMock);
         when(requestHeaderUriSpecMock.uri(anyString(), anyLong()))
                 .thenReturn(requestHeaderUriSpecMock);
         when(this.jwtTokenProvider.getAuthorizationHeader()).thenReturn(HttpHeaders.AUTHORIZATION);

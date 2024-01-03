@@ -14,13 +14,12 @@ public class CategoryManager {
 
     private static final String CATEGORY_URL_GET_ONE = "http://CATEGORY/api/v0/categories/{categoryId}";
 
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
 
     public Mono<CategoryResponse> findCategory(Long categoryId) {
         log.info("Invoking CategoryManager.findCategory method");
         log.info("Call category service");
         return this.webClient
-                .build()
                 .get()
                 .uri(CATEGORY_URL_GET_ONE, categoryId)
                 .retrieve()

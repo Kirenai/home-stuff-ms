@@ -2,10 +2,8 @@ package me.kirenai.re.consumption.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +23,8 @@ public class NourishmentRequest {
     @NotEmpty
     private String imageUrl;
     private String description;
-    @Min(value = 0)
-    private Integer unit;
-    @Max(value = 100)
-    @Min(value = 0)
-    private Integer percentage;
+    @Valid
+    @NotNull
+    private NourishmentTypeRequest type;
 
 }

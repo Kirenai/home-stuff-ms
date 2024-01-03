@@ -1,8 +1,7 @@
 package me.kirenai.re.consumption.util;
 
 import lombok.extern.slf4j.Slf4j;
-import me.kirenai.re.consumption.dto.NourishmentRequest;
-import me.kirenai.re.consumption.dto.NourishmentResponse;
+import me.kirenai.re.consumption.dto.*;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.mapper.ConsumptionMapper;
 
@@ -16,26 +15,25 @@ public class ConsumptionProcess {
                                              ConsumptionMapper mapper) {
         log.info("Invoking ConsumptionProcess.process method");
         NourishmentRequest nourishmentRequest = mapper.mapInNourishmentResponseToNourishmentRequest(nourishmentResponse);
+
         if (Objects.nonNull(consumption.getUnit())) {
             log.info("Unit: {}", consumption.getUnit());
-            if (consumption.getUnit() > nourishmentResponse.getUnit()) {
-                log.error("Unit exceeded c.unit={} is greater than nr.unit={}", consumption.getUnit(), nourishmentResponse.getUnit());
+            NourishmentTypeUnitResponse unitResponse = (NourishmentTypeUnitResponse) nourishmentResponse.getType();
+            if (consumption.getUnit() > unitResponse.getUnit()) {
+                log.error("Unit exceeded c.unit={} is greater than nr.unit={}", consumption.getUnit(), unitResponse.getUnit());
                 throw new IllegalStateException("amount exceeded");
             }
-            nourishmentRequest.setUnit(nourishmentResponse.getUnit() - consumption.getUnit());
-            if (nourishmentRequest.getUnit() == 0) {
-                nourishmentRequest.setUnit(0);
-            }
+            NourishmentTypeUnitRequest unitRequest = (NourishmentTypeUnitRequest) nourishmentRequest.getType();
+            unitRequest.setUnit(unitResponse.getUnit() - consumption.getUnit());
         } else if (Objects.nonNull(consumption.getPercentage())) {
             log.info("Percentage: {}", consumption.getPercentage());
-            if (consumption.getPercentage() > nourishmentResponse.getPercentage()) {
-                log.error("Percentage exceeded c.percentage={} is greater than nr.percentage={}", consumption.getPercentage(), nourishmentResponse.getPercentage());
+            NourishmentTypePercentageResponse percentageResponse = (NourishmentTypePercentageResponse) nourishmentResponse.getType();
+            if (consumption.getPercentage() > percentageResponse.getPercentage()) {
+                log.error("Percentage exceeded c.percentage={} is greater than nr.percentage={}", consumption.getPercentage(), percentageResponse.getPercentage());
                 throw new IllegalStateException("percentage exceeded");
             }
-            nourishmentRequest.setPercentage(nourishmentResponse.getPercentage() - consumption.getPercentage());
-            if (nourishmentRequest.getPercentage() == 0) {
-                nourishmentRequest.setPercentage(0);
-            }
+            NourishmentTypePercentageRequest percentageRequest = (NourishmentTypePercentageRequest) nourishmentRequest.getType();
+            percentageRequest.setPercentage(percentageResponse.getPercentage() - consumption.getPercentage());
         }
         return nourishmentRequest;
     }

@@ -16,12 +16,11 @@ import static me.kirenai.re.auth.util.Constants.GET_ROLES_USER_ID_URL;
 @RequiredArgsConstructor
 public class RoleUserManager {
 
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
 
     public Mono<List<String>> getRolesByUserId(Long userId) {
         log.info("Invoke RoleUserResource.getAuthorities method");
-        WebClient client = this.webClient.build();
-        return client
+        return this.webClient
                 .get()
                 .uri(GET_ROLES_USER_ID_URL, userId)
                 .retrieve()

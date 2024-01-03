@@ -18,11 +18,11 @@ public class UserManager {
 
     public static final String POST_USER_URL = "http://USER/api/v0/users";
 
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
 
     public Mono<UserResponse> postCreateUser(RegisterRequest request) {
         log.info("Invoke UserResource.postCreateUser method");
-        return this.webClient.build()
+        return this.webClient
                 .post()
                 .uri(POST_USER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -34,8 +34,7 @@ public class UserManager {
 
     public Mono<UserResponse> getUserByUsername(String username) {
         log.info("Invoke UserResource.getUserByUsername method");
-        WebClient client = this.webClient.build();
-        return client
+        return this.webClient
                 .get()
                 .uri(GET_USER_USERNAME_URL, username)
                 .retrieve()

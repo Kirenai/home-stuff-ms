@@ -24,18 +24,16 @@ class NourishmentManagerTest {
     @InjectMocks
     private NourishmentManager nourishmentManager;
     @Mock
-    private WebClient.Builder webClient;
+    private WebClient webClient;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
     public void findNourishmentTest() {
-        WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestHeadersUriSpec requestHeaderUriSpecMock = mock(WebClient.RequestHeadersUriSpec.class);
         WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
 
-        when(this.webClient.build()).thenReturn(webClientMock);
-        when(webClientMock.get()).thenReturn(requestHeaderUriSpecMock);
+        when(this.webClient.get()).thenReturn(requestHeaderUriSpecMock);
         when(requestHeaderUriSpecMock.uri(anyString(), anyLong()))
                 .thenReturn(requestHeaderUriSpecMock);
         when(this.jwtTokenProvider.getAuthorizationHeader()).thenReturn(HttpHeaders.AUTHORIZATION);
@@ -56,13 +54,11 @@ class NourishmentManagerTest {
 
     @Test
     public void updateNourishmentTest() {
-        WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
         WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
 
-        when(this.webClient.build()).thenReturn(webClientMock);
-        when(webClientMock.put()).thenReturn(requestBodyUriSpec);
+        when(this.webClient.put()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(anyString(), anyLong()))
                 .thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);

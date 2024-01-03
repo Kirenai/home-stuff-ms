@@ -1,9 +1,6 @@
 package me.kirenai.re.consumption.mapper;
 
-import me.kirenai.re.consumption.dto.ConsumptionRequest;
-import me.kirenai.re.consumption.dto.ConsumptionResponse;
-import me.kirenai.re.consumption.dto.NourishmentRequest;
-import me.kirenai.re.consumption.dto.NourishmentResponse;
+import me.kirenai.re.consumption.dto.*;
 import me.kirenai.re.consumption.entity.Consumption;
 import me.kirenai.re.consumption.util.ConsumptionMocks;
 import me.kirenai.re.consumption.util.NourishmentMocks;
@@ -52,12 +49,12 @@ class ConsumptionMapperTest {
         assertNotNull(request.getName());
         assertNotNull(request.getImageUrl());
         assertNotNull(request.getDescription());
-        assertNotNull(request.getUnit());
+        assertNotNull(((NourishmentTypeUnitRequest) request.getType()).getUnit());
 
         assertEquals(input.getName(), request.getName());
         assertEquals(input.getImageUrl(), request.getImageUrl());
         assertEquals(input.getDescription(), request.getDescription());
-        assertEquals(input.getUnit(), request.getUnit());
+        assertEquals(((NourishmentTypeUnitResponse) input.getType()).getUnit(), ((NourishmentTypeUnitRequest) request.getType()).getUnit());
     }
 
 }

@@ -14,13 +14,12 @@ public class UserManager {
 
     private static final String USER_URL_GET_ONE = "http://USER/api/v0/users/{userId}";
 
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
 
     public Mono<UserResponse> findUser(Long userId) {
         log.info("Invoking UserManager.findUser method");
         log.info("Call user service");
         return this.webClient
-                .build()
                 .get()
                 .uri(USER_URL_GET_ONE, userId)
                 .retrieve()

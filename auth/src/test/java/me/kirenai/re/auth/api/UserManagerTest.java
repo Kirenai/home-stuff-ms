@@ -23,18 +23,16 @@ class UserManagerTest {
     @InjectMocks
     private UserManager userManager;
     @Mock
-    private WebClient.Builder webClient;
+    private WebClient webClient;
 
     @Test
     public void createUserTest() throws IOException {
-        WebClient webClientMock = mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
         WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
         WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
         WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
 
-        when(this.webClient.build()).thenReturn(webClientMock);
-        when(webClientMock.post()).thenReturn(requestBodyUriSpec);
+        when(this.webClient.post()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodySpec);
         when(requestBodySpec.body(any(), eq(RegisterRequest.class))).thenReturn(requestHeadersSpec);
@@ -44,8 +42,7 @@ class UserManagerTest {
 
         this.userManager.postCreateUser(new RegisterRequest());
 
-        verify(this.webClient, times(1)).build();
-        verify(webClientMock, times(1)).post();
+        verify(this.webClient, times(1)).post();
         verify(requestBodyUriSpec, times(1)).uri(anyString());
         verify(requestBodyUriSpec, times(1)).contentType(any());
         verify(requestBodySpec, times(1)).body(any(), eq(RegisterRequest.class));

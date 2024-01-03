@@ -1,8 +1,7 @@
 package me.kirenai.re.consumption.util;
 
-import me.kirenai.re.consumption.dto.NourishmentRequest;
-import me.kirenai.re.consumption.dto.NourishmentResponse;
-import org.springframework.http.ResponseEntity;
+import me.kirenai.re.consumption.dto.*;
+import me.kirenai.re.consumption.enums.NourishmentTypeEnum;
 
 import java.util.List;
 
@@ -14,10 +13,18 @@ public class NourishmentMocks {
 
     public static List<NourishmentResponse> getNourishmentResponseList() {
         return List.of(
-                getNourishmentResponseMock(1L, "name1", "path1", "description1", true, 10, null),
-                getNourishmentResponseMock(2L, "name2", "path2", "description2", true, null, 65),
-                getNourishmentResponseMock(3L, "name3", "path3", "description3", true, 20, null)
+                getNourishmentResponseMock(1L, "name1", "path1", "description1", true, getNourishmentTypeUnitResponse(10)),
+                getNourishmentResponseMock(2L, "name2", "path2", "description2", true, getNourishmentTypePercentageResponse(65)),
+                getNourishmentResponseMock(3L, "name3", "path3", "description3", true, getNourishmentTypeUnitResponse(10))
         );
+    }
+
+    public static NourishmentTypeUnitResponse getNourishmentTypeUnitResponse(Integer unit) {
+        return NourishmentTypeUnitResponse.builder().nourishmentType(NourishmentTypeEnum.UNIT).unit(unit).build();
+    }
+
+    public static NourishmentTypePercentageResponse getNourishmentTypePercentageResponse(Integer percentage) {
+        return NourishmentTypePercentageResponse.builder().nourishmentType(NourishmentTypeEnum.PERCENTAGE).percentage(percentage).build();
     }
 
     public static NourishmentResponse getNourishmentResponseMock(Long id,
@@ -25,16 +32,14 @@ public class NourishmentMocks {
                                                                  String path,
                                                                  String description,
                                                                  Boolean isAvailable,
-                                                                 Integer unit,
-                                                                 Integer percentage) {
+                                                                 NourishmentTypeResponse type) {
         return NourishmentResponse.builder()
                 .nourishmentId(id)
                 .name(name)
                 .imageUrl(path)
                 .description(description)
                 .isAvailable(isAvailable)
-                .unit(unit)
-                .percentage(percentage)
+                .type(type)
                 .build();
     }
 
@@ -43,11 +48,12 @@ public class NourishmentMocks {
                 .name("name1")
                 .imageUrl("path1")
                 .description("description1")
-                .unit(10)
+                .type(getNourishmentTypeUnitRequest(10))
                 .build();
     }
 
-    public static ResponseEntity<NourishmentResponse> getNourishmentResponseEntity() {
-        return ResponseEntity.ok(getNourishmentResponse());
+    public static NourishmentTypeUnitRequest getNourishmentTypeUnitRequest(Integer unit) {
+        return NourishmentTypeUnitRequest.builder().unit(unit).build();
     }
+
 }

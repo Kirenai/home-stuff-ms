@@ -18,13 +18,13 @@ public class NourishmentManager {
     private static final String NOURISHMENT_GET_ONE_URL = "http://NOURISHMENT/api/v0/nourishments/{nourishmentId}";
     private static final String NOURISHMENT_PUT_URL = "http://NOURISHMENT/api/v0/nourishments/{nourishmentId}";
 
-    private final WebClient.Builder webClient;
+    private final WebClient webClient;
     private final JwtTokenProvider jwtTokenProvider;
 
     public Mono<NourishmentResponse> findNourishment(Long nourishmentId, String token) {
         log.info("Invoking NourishmentManager.findNourishment method");
         log.info("Call nourishment service findOne");
-        return this.webClient.build()
+        return this.webClient
                 .get()
                 .uri(NOURISHMENT_GET_ONE_URL, nourishmentId)
                 .header(this.jwtTokenProvider.getAuthorizationHeader(), token)
@@ -36,7 +36,7 @@ public class NourishmentManager {
                                         String token) {
         log.info("Invoking NourishmentManager.updateNourishment method");
         log.info("Call nourishment service update");
-        return this.webClient.build()
+        return this.webClient
                 .put()
                 .uri(NOURISHMENT_PUT_URL, nourishmentResponse.getNourishmentId())
                 .contentType(MediaType.APPLICATION_JSON)
