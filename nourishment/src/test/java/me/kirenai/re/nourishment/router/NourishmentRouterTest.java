@@ -18,6 +18,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.when;
 @WebFluxTest(excludeAutoConfiguration = {ConfigServerConfigDataLoader.class})
 @ContextConfiguration(classes = {NourishmentRouter.class, NourishmentHandler.class})
 class NourishmentRouterTest {
+
     @Autowired
     private WebTestClient webTestClient;
     @MockBean
@@ -33,6 +37,37 @@ class NourishmentRouterTest {
     private Validator validator;
 
     private final StringBuilder URL = new StringBuilder("/api/v0/nourishments");
+
+    @Test
+    @DisplayName("Should get all nourishments")
+    void shouldGetAllNourishments() {
+        List<NourishmentResponse> nourishmentResponseList = NourishmentMocks.getNourishmentResponseList();
+        when(this.nourishmentService.findAll(any())).thenReturn(Flux.fromIterable(nourishmentResponseList));
+
+        this.webTestClient
+                .get()
+                .uri(URL.toString())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(NourishmentResponse.class)
+                .isEqualTo(nourishmentResponseList)
+                .hasSize(nourishmentResponseList.size());
+    }
+
+    @Test
+    @DisplayName("Should get empty nourishments when getAll")
+    void shouldGetEmptyNourishments_WhenGetAll() {
+        when(this.nourishmentService.findAll(any())).thenReturn(Flux.empty());
+
+        this.webTestClient
+                .get()
+                .uri(URL.toString())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(NourishmentResponse.class)
+                .isEqualTo(Collections.emptyList())
+                .hasSize(0);
+    }
 
     @Test
     @DisplayName("Should get one nourishment")

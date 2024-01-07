@@ -9,7 +9,9 @@ import me.kirenai.re.nourishment.dto.NourishmentRequest;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
+import me.kirenai.re.nourishment.repository.NourishmentSortingRepository;
 import me.kirenai.re.nourishment.util.MapperUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -21,18 +23,16 @@ import reactor.core.publisher.Mono;
 public class NourishmentService {
 
     private final NourishmentRepository nourishmentRepository;
+    private final NourishmentSortingRepository nourishmentSortingRepository;
     private final NourishmentMapper mapper;
     private final UserManager userManager;
     private final CategoryManager categoryManager;
 
-//    public List<NourishmentResponse> findAll(Pageable pageable) {
-//        log.info("Invoking NourishmentService.findAll method");
-//        return this.nourishmentRepository.findAll(pageable)
-//                .getContent()
-//                .stream()
-//                .map(this.mapper::mapOutNourishmentToNourishmentResponse)
-//                .toList();
-//    }
+    public Flux<NourishmentResponse> findAll(PageRequest pageable) {
+        log.info("Invoking NourishmentService.findAll method");
+        return this.nourishmentSortingRepository.findAllBy(pageable)
+                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+    }
 
     public Mono<NourishmentResponse> findOne(Long nourishmentId) {
         log.info("Invoking NourishmentService.findOne method");

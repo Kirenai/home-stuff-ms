@@ -55,6 +55,7 @@ public class NourishmentMocks {
                 .type(percentage)
                 .build();
     }
+
     public static NourishmentRequest getNourishmentRequestUnit() {
         NourishmentTypeUnitRequest unit = NourishmentTypeUnitRequest.builder().unit(15).nourishmentType(NourishmentTypeEnum.UNIT).build();
         return NourishmentRequest.builder()

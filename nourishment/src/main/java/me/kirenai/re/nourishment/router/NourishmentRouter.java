@@ -17,9 +17,10 @@ public class NourishmentRouter {
     @Bean
     public RouterFunction<ServerResponse> route(NourishmentHandler nourishmentHandler) {
         return RouterFunctions.route()
-                .GET(URL + "/{nourishmentId}", nourishmentHandler::findOne)
-                .GET(URL + "/user/{userId}", nourishmentHandler::findAllByUserId)
-                .GET(URL + "/isAvailable/{isAvailable}", nourishmentHandler::findAllByIsAvailable)
+                .GET(URL, nourishmentHandler::getAll)
+                .GET(URL + "/{nourishmentId}", nourishmentHandler::getOne)
+                .GET(URL + "/user/{userId}", nourishmentHandler::getAllByUserId)
+                .GET(URL + "/isAvailable/{isAvailable}", nourishmentHandler::getAllByIsAvailable)
                 .POST(URL + "/user/{userId}/category/{categoryId}", nourishmentHandler::save)
                 .PUT(URL + "/{nourishmentId}", nourishmentHandler::update)
                 .DELETE(URL + "/{nourishmentId}", nourishmentHandler::delete)
