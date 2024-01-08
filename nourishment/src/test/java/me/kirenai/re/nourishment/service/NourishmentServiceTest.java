@@ -4,8 +4,10 @@ import me.kirenai.re.exception.nourishment.NourishmentNotFoundExceptionFactory;
 import me.kirenai.re.nourishment.api.CategoryManager;
 import me.kirenai.re.nourishment.api.UserManager;
 import me.kirenai.re.nourishment.dto.NourishmentResponse;
+import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.mapper.NourishmentMapper;
 import me.kirenai.re.nourishment.repository.NourishmentRepository;
+import me.kirenai.re.nourishment.repository.NourishmentSortingRepository;
 import me.kirenai.re.nourishment.util.CategoryMocks;
 import me.kirenai.re.nourishment.util.NourishmentMocks;
 import me.kirenai.re.nourishment.util.UserMocks;
@@ -15,7 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -34,36 +38,38 @@ class NourishmentServiceTest {
     @Mock
     private NourishmentRepository nourishmentRepository;
     @Mock
+    private NourishmentSortingRepository nourishmentSortingRepository;
+    @Mock
     private NourishmentMapper mapper;
     @Mock
     private UserManager userManager;
     @Mock
     private CategoryManager categoryManager;
 
-//    @Test
-//    @DisplayName("Should find a list of nourishment")
-//    void findAllTest() {
-//        int expectedSize = 3;
-//        Pageable pageableMock = mock(Pageable.class);
-//        Page<Nourishment> nourishmentPageMock = NourishmentMocks
-//                .getNourishmentPage();
-//        List<NourishmentResponse> nourishmentDtoListMock = NourishmentMocks
-//                .getNourishmentResponseList();
-//
-//        when(this.nourishmentRepository.findAll(any(Pageable.class)))
-//                .thenReturn(nourishmentPageMock);
-//        when(this.mapper.mapOutNourishmentToNourishmentResponse(any(Nourishment.class)))
-//                .thenReturn(nourishmentDtoListMock.get(0), nourishmentDtoListMock.get(1), nourishmentDtoListMock.get(2));
-//
-//        List<NourishmentResponse> response = this.nourishmentService.findAll(pageableMock);
-//
-//        assertEquals(expectedSize, response.size());
-//        assertEquals(nourishmentDtoListMock, response);
-//        verify(this.nourishmentRepository, times(1)).findAll(pageableMock);
-//        verify(this.mapper, times(3)).mapOutNourishmentToNourishmentResponse(any());
-//    }
+    @Test
+    @DisplayName("Should find a list of nourishment")
+    void findAllTest() throws IOException {
+        List<NourishmentResponse> nourishmentResponseList = NourishmentMocks
+                .getNourishmentResponseList();
 
-    @BeforeTestMethod()
+        when(this.nourishmentSortingRepository.findAllBy(any(Pageable.class)))
+                .thenReturn(NourishmentMocks.getInstance().getFluxNourishment());
+        when(this.mapper.mapOutNourishmentResponseToMono(any(Nourishment.class)))
+                .thenReturn(
+                        Mono.just(nourishmentResponseList.get(0)),
+                        Mono.just(nourishmentResponseList.get(1)),
+                        Mono.just(nourishmentResponseList.get(2))
+                );
+
+        Flux<NourishmentResponse> response = this.nourishmentService.findAll(PageRequest.of(1, 3, Sort.by(Sort.Direction.ASC, "nourishmentId")));
+
+        StepVerifier
+                .create(response)
+                .expectNext(nourishmentResponseList.get(0))
+                .expectNext(nourishmentResponseList.get(1))
+                .expectNext(nourishmentResponseList.get(2))
+                .verifyComplete();
+    }
 
     @Test
     @DisplayName("Should find a list of nourishment by user id")

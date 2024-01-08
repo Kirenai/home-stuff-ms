@@ -1,0 +1,29 @@
+[
+  {
+    "nourishmentId": 1,
+    "name": "name1",
+    "imageUrl": "path1",
+    "description": "description1",
+    "isAvailable": true,
+    "unit": 15,
+    "nourishmentTypeId": 1
+  },
+  {
+    "nourishmentId": 2,
+    "name": "name2",
+    "imageUrl": "path2",
+    "description": "description2",
+    "isAvailable": true,
+    "percentage": 15,
+    "nourishmentTypeId": 2
+  },
+  {
+    "nourishmentId": 3,
+    "name": "name3",
+    "imageUrl": "path3",
+    "description": "description3",
+    "isAvailable": true,
+    "unit": 30,
+    "nourishmentTypeId": 1
+  }
+]

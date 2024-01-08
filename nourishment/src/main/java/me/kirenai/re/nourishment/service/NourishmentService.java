@@ -31,7 +31,7 @@ public class NourishmentService {
     public Flux<NourishmentResponse> findAll(PageRequest pageable) {
         log.info("Invoking NourishmentService.findAll method");
         return this.nourishmentSortingRepository.findAllBy(pageable)
-                .map(this.mapper::mapOutNourishmentToNourishmentResponse);
+                .flatMap(this.mapper::mapOutNourishmentResponseToMono);
     }
 
     public Mono<NourishmentResponse> findOne(Long nourishmentId) {

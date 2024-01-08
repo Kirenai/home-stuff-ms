@@ -1,14 +1,26 @@
 package me.kirenai.re.nourishment.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import me.kirenai.re.nourishment.dto.*;
 import me.kirenai.re.nourishment.entity.Nourishment;
 import me.kirenai.re.nourishment.enums.NourishmentTypeEnum;
+import me.kirenai.re.nourishment.util.helper.ObjectMapperHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import reactor.core.publisher.Flux;
 
+import java.io.IOException;
 import java.util.List;
 
 public class NourishmentMocks {
+
+    private static final NourishmentMocks INSTANCE = new NourishmentMocks();
+
+    private final ObjectMapperHelper mapper = new ObjectMapperHelper();
+
+    public static NourishmentMocks getInstance() {
+        return INSTANCE;
+    }
 
     public static NourishmentResponse getNourishmentResponseMock(Long id,
                                                                  String name,
@@ -92,5 +104,17 @@ public class NourishmentMocks {
         nourishmentMock.setNourishmentTypeId(1L);
         nourishmentMock.setPercentage(100);
         return nourishmentMock;
+    }
+
+    public Flux<Nourishment> getFluxNourishment() throws IOException {
+        return Flux.fromIterable(this.getNourishments());
+    }
+
+    private List<Nourishment> getNourishments() throws IOException {
+        return this.mapper.readValue(
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("mock/nourishment/Nourishments.json"),
+                new TypeReference<>() {
+                }
+        );
     }
 }
