@@ -2,7 +2,6 @@ package me.kirenai.re.exception.nourishment;
 
 import me.kirenai.re.exception.entity.EntityErrorMessage;
 import me.kirenai.re.exception.entity.EntityNotFoundExceptionFactory;
-import me.kirenai.re.exception.user.UserErrorMessage;
 import me.kirenai.re.exception.util.ServiceEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -17,7 +16,7 @@ public class NourishmentNotFoundExceptionFactory extends EntityNotFoundException
 
     @Override
     public EntityErrorMessage createError(ServerRequest request, EntityNotFoundExceptionFactory exception) {
-        return UserErrorMessage.builder()
+        return NourishmentErrorMessage.builder()
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .timestamp(LocalDateTime.now())
