@@ -6,6 +6,8 @@ services:
     image: openzipkin/zipkin-mysql:latest
     ports:
       - "3307:3306"
+    networks:
+      - zipkin-red
 
   zipkin:
     container_name: zipkin
@@ -20,6 +22,8 @@ services:
       - MYSQL_PASS=zipkin
     depends_on:
       - storage
+    networks:
+      - zipkin-red
 
   dependencies:
     container_name: zipkin-dependencies
@@ -31,6 +35,46 @@ services:
       - MYSQL_USER=zipkin
       - MYSQL_PASS=zipkin
       - JAVA_OPTS=-verbose:gc -Xms1G -Xmx1G
+    networks:
+      - zipkin-red
+
+  keycloak-dev:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:23.0.6
+    ports:
+      - "9090:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLE=true
+      - KC_METRICS_ENABLE=true
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=postgres-keycloak-dev
+      - KC_DB_USERNAME=admin
+      - KC_DB_PASSWORD=admin
+    command: start-dev
+    networks:
+      - keycloak-red
+    depends_on:
+      - postgres-keycloak-dev
+
+  postgres-keycloak-dev:
+    container_name: postgres-keycloak
+    image: postgres:15-alpine3.19
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=keycloak
+    networks:
+      - keycloak-red
+
+networks:
+  zipkin-red:
+    driver: bridge
+  keycloak-red:
+    driver: bridge
 
 
 
