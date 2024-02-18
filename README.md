@@ -21,7 +21,7 @@ available for consumption or for provisioning.
     * Spring Validation
     * Spring Cloud Gateway
     * Spring Cloud Eureka
-    * Spring Cloud Config
+    * Spring Cloud Config [Server Config](https://github.com/Kirenai/home-stuff-ms-config-server)
 * Lombok
 * MySQL Drive R2DBC
 * MapStruct
